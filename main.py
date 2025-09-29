@@ -7,8 +7,8 @@ from mediapipe.tasks.python import vision
 
 MARGIN = 10  # pixels
 ROW_SIZE = 10  # pixels
-FONT_SIZE = 1
-FONT_THICKNESS = 1
+FONT_SIZE = 5
+FONT_THICKNESS = 5
 TEXT_COLOR = (255, 0, 0)  # red
 
 
@@ -64,8 +64,13 @@ detection_result = detector.detect(mp_image)
 # STEP 5: Process the detection result. In this case, visualize it.
 print(detection_result)
 
+bbox = detection_result.detections[0].bounding_box
+
 image_copy = np.copy(mp_image.numpy_view())
-cv2.line()
-annotated_image = visualize(image_copy, detection_result)
-rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
-cv2.imshow(rgb_annotated_image)
+#annotated_image = visualize(image_copy, detection_result)
+#rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
+#cv2.imwrite("detection_result.jpg", rgb_annotated_image)
+#colour_img= cv2.cvtColor(image_copy, cv2.COLOR_BGR2RGB)
+def crop_image(img, origin_y, origin_x, height, width):
+  crop_img = img[origin_y:origin_y+height+10, origin_x-10:origin_x+width]
+  cv2.imwrite("cropped.jpg", crop_img)
