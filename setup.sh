@@ -1,0 +1,1 @@
+export PYTHONPATH="/home/bil/posture_detector/src"

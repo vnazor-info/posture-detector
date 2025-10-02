@@ -2,15 +2,19 @@
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-
 from src import lib
+from Detector import Detector
 
+import config as cfg
 ##model
 if __name__ == "__main__":
   
-
+  detector = Detector(model_path=cfg.MODEL_PATH)
+   
   # STEP 4: Detect objects in the input image.
-  detection_result = detector.detect(mp_image)
+  #open image then detect
+  detection_result =detector.detect(cfg.mp_image) 
+   
 
   # STEP 5: Process the detection result. In this case, visualize it.
   print(detection_result)
@@ -22,9 +26,9 @@ if __name__ == "__main__":
 #rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 #cv2.imwrite("detection_result.jpg", rgb_annotated_image)
 #colour_img= cv2.cvtColor(image_copy, cv2.COLOR_BGR2RGB)
-for detection in detections:
-  for category in detection.categories:
-    if category.category_name == "person":
-      print("nasao sam osobu")
-    else:
-      print("nema ljudi")
+#for detection in detections:
+  #for category in detection.categories:
+    #if category.category_name == "person":
+      #print("nasao sam osobu")
+    #else:
+      #print("nema ljudi")

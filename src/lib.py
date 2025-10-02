@@ -2,10 +2,7 @@ import config as cfg
 import numpy as np
 import cv2
 
-def visualize(
-    image,
-    detection_result
-) -> np.ndarray:
+def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.
   Args:
     image: The input RGB image.
@@ -35,6 +32,8 @@ def visualize(
 def crop_image(img, origin_y, origin_x, height, width):
   crop_img = img[origin_y:origin_y+height+10, origin_x-10:origin_x+width]
   cv2.imwrite("cropped.jpg", crop_img)
+  return(crop_img)
 
-if __name__ == "__main__":
-  print("Do some tests")
+
+#if __name__ == "__main__":
+  #print("Do some tests")
