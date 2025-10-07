@@ -23,10 +23,10 @@ class Detector:
         detection_result = self.detector.detect(image)
         #pronalazi osobu i vraća bounding_box
         
-        bbox = detection_result.detections[0].bounding_box
+        #bbox = detection_result.detections[0].bounding_box
         return detection_result.detections
 
     def extract(self, image, bbox):
         #obrezuje sliku na temelju bbox i vraća ovrezanu sliku
         crop_img = image[bbox.origin_y:bbox.origin_y+bbox.height+10, bbox.origin_x-10:bbox.origin_x+bbox.width]
-        
+        return crop_img
