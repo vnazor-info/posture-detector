@@ -1,4 +1,4 @@
-from src import config as cfg
+import config as cfg
 import numpy as np
 import cv2
 import mediapipe as mp
@@ -6,7 +6,14 @@ from Detector import Detector
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import math
+from picamzero import Camera
+from time import sleep
 
+def camera_test():
+  cam = Camera()
+  cam.start_preview()
+  sleep(5)
+  
 def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.
   Args:
