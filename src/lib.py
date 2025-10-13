@@ -1,10 +1,12 @@
-import config as cfg
+from matplotlib import container
+from src import config as cfg
 import numpy as np
 import cv2
 import mediapipe as mp
 from Detector import Detector
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+from mediapipe.tasks.python.components import containers
 import math
 from picamzero import Camera
 from time import sleep
@@ -81,6 +83,10 @@ def detector_showcase():
 
 DESIRED_HEIGHT = 480
 DESIRED_WIDTH = 480
+
+RegionOfInterest = vision.InteractiveSegmenterRegionOfInterest
+NormalizedKeypoint = containers.keypoint.NormalizedKeypoint
+
 def resize_and_show(image):
   h, w = image.shape[:2]
   if h < w:
@@ -89,30 +95,27 @@ def resize_and_show(image):
     img = cv2.resize(image, (math.floor(w/(h/DESIRED_HEIGHT)), DESIRED_HEIGHT))
   cv2.imwrite("area.jpg",img)
 
-def playground():
-
-  BG_COLOR = (192, 192, 192) # gray
-  MASK_COLOR = (255, 255, 255) # white
-  IMAGE_FILENAMES = ['/home/bil/posture_detector/resources/man-standing-861098.jpg']
-  images = {name: cv2.imread(name) for name in IMAGE_FILENAMES}
-
-
+def person_detect():
   # Create the options that will be used for ImageSegmenter
   base_options = python.BaseOptions(model_asset_path='/home/bil/posture_detector/resources/selfie_segmenter_landscape.tflite')
-  options = vision.ImageSegmenterOptions(base_options=base_options,
-                                        output_category_mask=True)
+  options = vision.ImageSegmenterOptions(base_options=base_options, output_category_mask=True)
+  IMAGE_FILENAMES = ['/home/bil/posture_detector/resources/man-standing-861098.jpg']
 
-  # Create the image segmenter
-  with vision.ImageSegmenter.create_from_options(options) as segmenter:
-
-    # Loop through demo image(s)
+  with vision.InteractiveSegmenter.create_from_options(options) as segmenter:
+  
     for image_file_name in IMAGE_FILENAMES:
+      BG_COLOR = (0, 0, 0) # gray
+      MASK_COLOR = (255, 255, 255) # white
+      IMAGE_FILENAMES = ['/home/bil/posture_detector/resources/man-standing-861098.jpg']
+      images = {name: cv2.imread(name) for name in IMAGE_FILENAMES}
 
-      # Create the MediaPipe image file that will be segmented
       image = mp.Image.create_from_file(image_file_name)
 
-      # Retrieve the masks for the segmented image
-      segmentation_result = segmenter.segment(image)
+        # Retrieve the masks for the segmented image
+
+      roi = RegionOfInterest(format=RegionOfInterest.Format.KEYPOINT,
+                           keypoint=NormalizedKeypoint(DESIRED_HEIGHT/2, DESIRED_WIDTH/2))
+      segmentation_result = segmenter.segment(image,roi)
       category_mask = segmentation_result.category_mask
 
       # Generate solid color images for showing the output segmentation mask.
@@ -128,26 +131,3 @@ def playground():
       print(f'Segmentation mask of {image}:')
       resize_and_show(output_image)
       
-
-      with python.vision.ImageSegmenter.create_from_options(options) as segmenter:
-
-  # Loop through available image(s)
-        for image_file_name in IMAGE_FILENAMES:
-
-    # Create the MediaPipe Image
-          image = mp.Image.create_from_file(image_file_name)
-
-          # Retrieve the category masks for the image
-          segmentation_result = segmenter.segment(image)
-          category_mask = segmentation_result.category_mask
-
-          # Convert the BGR image to RGB
-          image_data = cv2.cvtColor(image.numpy_view(), cv2.COLOR_BGR2RGB)
-
-          # Apply effects
-          blurred_image = cv2.GaussianBlur(image_data, (55,55), 0)
-          condition = np.stack((category_mask.numpy_view(),) * 3, axis=-1) > 0.1
-          output_image = np.where(condition, image_data, blurred_image)
-
-          print(f'Blurred background of {image_file_name}:')
-          resize_and_show(output_image)

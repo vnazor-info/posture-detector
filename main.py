@@ -6,5 +6,5 @@ from src import lib
 if __name__ == "__main__":
   
   #lib.detector_showcase()
-  #lib.playground()
-  lib.camera_test()
+  lib.person_detect()
+  #lib.camera_test()
