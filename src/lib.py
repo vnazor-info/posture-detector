@@ -7,14 +7,24 @@ from Detector import Detector
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.components import containers
+from mediapipe.framework.formats import landmark_pb2  
+from mediapipe import solutions
 import math
-from picamzero import Camera
+from picamera2 import Picamera2, Preview
 from time import sleep
 
 def camera_test():
-  cam = Camera()
-  cam.start_preview()
+  picam = Picamera2()
+        
+  config = picam.create_preview_configuration()
+  picam.configure(config)
+
+  picam.start_preview(Preview.QTGL)
+
+  picam.start()
   sleep(5)
+  picam.close()
+
   
 def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.
@@ -97,16 +107,16 @@ def resize_and_show(image):
 
 def person_detect():
   # Create the options that will be used for ImageSegmenter
-  base_options = python.BaseOptions(model_asset_path='/home/bil/posture_detector/resources/selfie_segmenter_landscape.tflite')
+  base_options = python.BaseOptions(model_asset_path='/home/vlatko/posture_detector/resources/selfie_segmenter_landscape.tflite')
   options = vision.ImageSegmenterOptions(base_options=base_options, output_category_mask=True)
-  IMAGE_FILENAMES = ['/home/bil/posture_detector/resources/man-standing-861098.jpg']
+  IMAGE_FILENAMES = ['/home/vlatko/Projects/posture-detector/resources/man_standing.jpg']
 
   with vision.InteractiveSegmenter.create_from_options(options) as segmenter:
   
     for image_file_name in IMAGE_FILENAMES:
       BG_COLOR = (0, 0, 0) # gray
       MASK_COLOR = (255, 255, 255) # white
-      IMAGE_FILENAMES = ['/home/bil/posture_detector/resources/man-standing-861098.jpg']
+      IMAGE_FILENAMES = ['/home/vlatko/Projects/posture-detector/resources/man_standing.jpg']
       images = {name: cv2.imread(name) for name in IMAGE_FILENAMES}
 
       image = mp.Image.create_from_file(image_file_name)
@@ -130,4 +140,43 @@ def person_detect():
 
       print(f'Segmentation mask of {image}:')
       resize_and_show(output_image)
-      
+
+
+def playground():
+  def draw_landmarks_on_image(rgb_image, detection_result):
+    pose_landmarks_list = detection_result.pose_landmarks
+    annotated_image = np.copy(rgb_image)
+
+    # Loop through the detected poses to visualize.
+    for idx in range(len(pose_landmarks_list)):
+      pose_landmarks = pose_landmarks_list[idx]
+
+      # Draw the pose landmarks.  
+      pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
+      pose_landmarks_proto.landmark.extend([
+        landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks
+      ])
+      solutions.drawing_utils.draw_landmarks(
+        annotated_image,
+        pose_landmarks_proto,
+        solutions.pose.POSE_CONNECTIONS,
+        solutions.drawing_styles.get_default_pose_landmarks_style())
+    return annotated_image 
+
+#tions = py STEP 2: Create an PoseLandmarker object.
+  # STEP 2: Create an PoseLandmarker object.
+  base_options = python.BaseOptions(model_asset_path='resources/pose_landmarker_heavy.task')
+  options = vision.PoseLandmarkerOptions(
+  base_options=base_options,
+  output_segmentation_masks=True)
+  detector = vision.PoseLandmarker.create_from_options(options)
+
+  # STEP 3: Load the input image.
+  image = mp.Image.create_from_file("/home/vlatko/Projects/posture-detector/resources/man_standing.jpg")
+
+  # STEP 4: Detect pose landmarks from the input image.
+  detection_result = detector.detect(image)
+
+  # STEP 5: Process the detection result. In this case, visualize it.
+  annotated_image = draw_landmarks_on_image(image.numpy_view(), detection_result)
+  cv2.imwrite("points_detection.jpg", annotated_image)
