@@ -1,3 +1,4 @@
 mp-env/
 *.jpg
 src/__pycache__/
+__pycache__/

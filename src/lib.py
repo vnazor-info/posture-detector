@@ -12,19 +12,29 @@ from mediapipe import solutions
 import math
 from picamera2 import Picamera2, Preview
 from time import sleep
+from PIL import Image
+from Camera import Camera
 
 def camera_test():
   picam = Picamera2()
-        
+  
   config = picam.create_preview_configuration()
   picam.configure(config)
 
   picam.start_preview(Preview.QTGL)
 
   picam.start()
-  sleep(5)
+  sleep(2)
+  camera_image = picam.capture_image().convert('RGB')
   picam.close()
+  camera_image.save("output.jpg")
 
+def camera_class_test():
+  cam = Camera()
+  cam.preview(5)
+  cam.on()
+  cam.capture_save()
+  cam.off()
   
 def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.
