@@ -3,38 +3,38 @@ from src import config as cfg
 import numpy as np
 import cv2
 import mediapipe as mp
-from Detector import Detector
+from . import Detector
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.components import containers
 from mediapipe.framework.formats import landmark_pb2  
 from mediapipe import solutions
 import math
-from picamera2 import Picamera2, Preview
 from time import sleep
 from PIL import Image
-from Camera import Camera
+from . import Camera
 
 def camera_test():
-  picam = Picamera2()
-  
-  config = picam.create_preview_configuration()
-  picam.configure(config)
-
-  picam.start_preview(Preview.QTGL)
-
-  picam.start()
-  sleep(2)
-  camera_image = picam.capture_image().convert('RGB')
-  picam.close()
-  camera_image.save("output.jpg")
+  #picam = Picamera2()
+  #
+  #config = picam.create_preview_configuration()
+  #picam.configure(config)
+  # 
+  #picam.start_preview(Preview.QTGL)
+  #
+  #picam.start()
+  #sleep(2)
+  #camera_image = picam.capture_image().convert('RGB')
+  #picam.close()
+  #camera_image.save("output.jpg")
+  print("camerat test")
 
 def camera_class_test():
-  cam = Camera()
+  cam = Camera.Camera()
   cam.preview(5)
   cam.on()
   cam.capture_save()
-  cam.off()
+  #cam.off()
   
 def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.

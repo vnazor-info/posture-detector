@@ -1,1 +1,1 @@
-export PYTHONPATH="/home/bil/posture_detector/src"
+python3.11 -m venv posvenv
