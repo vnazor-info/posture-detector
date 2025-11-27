@@ -38,21 +38,35 @@ class Camera:
                 self.out.write(frame)
             cv2.imshow('Camera', frame)
 
-            if cv2.waitKey(1) == ord('s'):
+            if cv2.waitKey(10) == ord('s'):
                 record = not record
             #self.picam.start_preview(Preview.QTGL)
             #self.picam.start()
             #sleep(time)
             #self.picam.stop_preview()
             #self.picam.stop()
-            if cv2.waitKey(1) == ord('q'):
+            elif cv2.waitKey(10) == ord('q'):
+                cv2.destroyWindow("Camera")
                 break
+                   
+
 
     def off(self):
         print("camera off")
         #self.picam.close()
 
     def capture_save(self):
+        ret, frame = self.cam.read()
+
+        if ret:
+            cv2.imshow("Captured", frame)         
+            cv2.imwrite("captured_image.png", frame)  
+            cv2.waitKey(1)                      
+            cv2.destroyWindow("Captured")       
+        else:
+            print("Failed to capture image.")
+
+        self.cam.release() 
         print("camera capture and save")
         #camera_image = self.picam.capture_image().convert('RGB')
         #camera_image.save("output.jpg")

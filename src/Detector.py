@@ -30,3 +30,10 @@ class Detector:
         #obrezuje sliku na temelju bbox i vraća ovrezanu sliku
         crop_img = image[bbox.origin_y:bbox.origin_y+bbox.height+10, bbox.origin_x-10:bbox.origin_x+bbox.width]
         return crop_img
+
+
+    def crop_person(self, image):
+        #napravit crop
+        #napravit funkciju u kojoj ako ima osobe cropa ako nema vraca 0
+    def draw_landmark(self, person_crop):
+        #daje tocke i na temelju tih tocaka vraca osobu s landmarkom

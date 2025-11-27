@@ -32,7 +32,6 @@ def camera_test():
 def camera_class_test():
   cam = Camera.Camera()
   cam.preview(5)
-  cam.on()
   cam.capture_save()
   #cam.off()
   
