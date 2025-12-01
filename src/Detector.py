@@ -1,5 +1,6 @@
 from . import config as cfg
 import mediapipe as mp
+import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
@@ -15,8 +16,7 @@ class Detector:
         base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.ObjectDetectorOptions(base_options=base_options,
                                                 score_threshold=0.5)
-        detector = vision.ObjectDetector.create_from_options(options)
-        self.detector = detector
+        self.detector = vision.ObjectDetector.create_from_options(options)
 
     def detect(self, image): #Samo osobe detektiramo
         
@@ -26,14 +26,8 @@ class Detector:
         #bbox = detection_result.detections[0].bounding_box
         return detection_result.detections
 
-    def extract(self, image, bbox):
-        #obrezuje sliku na temelju bbox i vraća ovrezanu sliku
-        crop_img = image[bbox.origin_y:bbox.origin_y+bbox.height+10, bbox.origin_x-10:bbox.origin_x+bbox.width]
-        return crop_img
-
-
-    def crop_person(self, image):
-        #napravit crop
-        #napravit funkciju u kojoj ako ima osobe cropa ako nema vraca 0
-    def draw_landmark(self, person_crop):
-        #daje tocke i na temelju tih tocaka vraca osobu s landmarkom
+    def crop_person(self, image, bbox):
+        #obrezuje sliku na temelju bbox i vrasća ovrezanu sliku
+        cropped_image = image.numpy_view()[bbox.origin_y:bbox.origin_y+bbox.height+10, bbox.origin_x-10:bbox.origin_x+bbox.width]
+        cropped_image = np.array(cropped_image)
+        return mp.Image(image_format=mp.ImageFormat.SRGB, data=cropped_image)
