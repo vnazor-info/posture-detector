@@ -20,7 +20,6 @@ class Landmark:
 
         # STEP 4: Detect pose landmarks from the input image.
         detection_result = self.detector.detect(person_crop)
-        print(detection_result)
         pose_landmarks_list = detection_result.pose_landmarks
         annotated_image = person_crop.numpy_view().copy()
 

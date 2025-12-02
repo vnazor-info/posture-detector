@@ -177,18 +177,33 @@ def person_detect():
 def test():
   stick_figure = Landmark.Landmark("resources/pose_landmarker_heavy.task")
   detect = Detector.Detector(cfg.MODEL_PATH)
-  whole_img = mp.Image.create_from_file("resources/man-standing-861098.jpg")
-  detect_result = detect.detect(whole_img)
-  crop_image = detect.crop_person(whole_img, bbox=detect_result[0].bounding_box)
-  
-  img_landfmarks = stick_figure.draw_landmark(person_crop=crop_image)
-  #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
-  #def draw_landmarks_on_image(rgb_image, detection_result):
-    #pose_landmarks_list = detection_result.pose_landmarks
+  cam = Camera.Camera()
 
-   # annotated_image = np.copy(rgb_image)
-  #crop_image = cv2.imread(drawlandmarks.jpg)
-  cv2.imwrite("points_detection.jpg", img_landfmarks)
+  while True:
+    cv_image = cam.capture_image()
+    np_image = np.array(cv_image)
+    whole_img = mp.Image(
+      image_format=mp.ImageFormat.SRGB,
+      data=np_image
+    )
+    detect_result = detect.detect(whole_img)
+    for result in detect_result:
+      #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
+      img_landfmarks = stick_figure.draw_landmark(person_crop=whole_img)
+    #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
+    #def draw_landmarks_on_image(rgb_image, detection_result):
+      #pose_landmarks_list = detection_result.pose_landmarks
+
+    # annotated_image = np.copy(rgb_image)
+    #crop_image = cv2.imread(drawlandmarks.jpg)
+    #cv2.imwrite("points_detection.jpg", img_landfmarks)
+      cv2.imshow("landmarks", img_landfmarks)
+    
+    if cv2.waitKey(1) == ord('q'):
+      cv2.destroyAllWindows()
+      break
+
+
 def playground():
   detect = Detector.Detector()
   detect.crop_person()

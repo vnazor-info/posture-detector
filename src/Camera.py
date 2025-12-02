@@ -10,7 +10,7 @@ class Camera:
 
         #self.config = self.picam.create_preview_configuration()
         #self.picam.configure(self.config)
-        self.cam = cv2.VideoCapture(0)
+        self.cam = cv2.VideoCapture(2)
         self.frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
         
@@ -72,5 +72,6 @@ class Camera:
         #camera_image.save("output.jpg")
         
     def capture_image(self):
-        print("camera capture")
+        ret, frame = self.cam.read()
         #return self.picam.capture_image().convert('RGB')
+        return frame
