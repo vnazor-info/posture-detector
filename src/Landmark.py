@@ -20,12 +20,12 @@ class Landmark:
 
         # STEP 4: Detect pose landmarks from the input image.
         detection_result = self.detector.detect(person_crop)
-        pose_landmarks_list = detection_result.pose_landmarks
+        self.pose_landmarks_list = detection_result.pose_landmarks
         annotated_image = person_crop.numpy_view().copy()
 
         # Loop through the detected poses to visualize.
-        for idx in range(len(pose_landmarks_list)):
-            pose_landmarks = pose_landmarks_list[idx]
+        for idx in range(len(self.pose_landmarks_list)):
+            pose_landmarks = self.pose_landmarks_list[idx]
 
             # Draw the pose landmarks.
             pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()

@@ -174,7 +174,7 @@ def person_detect():
       resize_and_show(output_image)
 
 
-def test():
+def stickfigure_videotest():
   stick_figure = Landmark.Landmark("resources/pose_landmarker_heavy.task")
   detect = Detector.Detector(cfg.MODEL_PATH)
   cam = Camera.Camera()
@@ -187,9 +187,10 @@ def test():
       data=np_image
     )
     detect_result = detect.detect(whole_img)
+    show_img=whole_imgq
     for result in detect_result:
       #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
-      img_landfmarks = stick_figure.draw_landmark(person_crop=whole_img)
+      show_img = stick_figure.draw_landmark(person_crop=whole_img)
     #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
     #def draw_landmarks_on_image(rgb_image, detection_result):
       #pose_landmarks_list = detection_result.pose_landmarks
@@ -197,7 +198,7 @@ def test():
     # annotated_image = np.copy(rgb_image)
     #crop_image = cv2.imread(drawlandmarks.jpg)
     #cv2.imwrite("points_detection.jpg", img_landfmarks)
-      cv2.imshow("landmarks", img_landfmarks)
+      cv2.imshow("landmarks", show_img)
     
     if cv2.waitKey(1) == ord('q'):
       cv2.destroyAllWindows()
@@ -205,7 +206,41 @@ def test():
 
 
 def playground():
-  detect = Detector.Detector()
-  detect.crop_person()
-  detect.draw_landmark()
+  stick_figure = Landmark.Landmark("resources/pose_landmarker_heavy.task")
+  detect = Detector.Detector(cfg.MODEL_PATH)
+  cam = Camera.Camera()
+
+  while True:
+    cv_image = cv2.imread("resources/man-standing.jpg")
+    #cv_image = cam.capture_image()
+    np_image = np.array(cv_image)
+    whole_img = mp.Image(
+      image_format=mp.ImageFormat.SRGB,
+      data=np_image
+    )
+    detect_result = detect.detect(whole_img)
+    show_img=whole_img
+    for _ in detect_result:
+      #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
+      show_img = stick_figure.draw_landmark(person_crop=whole_img)
+    #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
+    #def draw_landmarks_on_image(rgb_image, detection_result):
+      #pose_landmarks_list = detection_result.pose_landmarks
+
+    # annotated_image = np.copy(rgb_image)
+    #crop_image = cv2.imread(drawlandmarks.jpg)
+    #cv2.imwrite("points_detection.jpg", img_landfmarks)
+      cv2.imshow("landmarks", show_img)
+      
+    if cv2.waitKey(1) == ord('p'):
+      a=0
+      for point in stick_figure.pose_landmarks_list:
+        print(f' {a}.) x: {point} \n')
+        a=a+1
+
+    if cv2.waitKey(1) == ord('q'):
+      cv2.destroyAllWindows()
+      break
+
+    #z: The landmark depth, with the depth at the midpoint of the hips as the origin. The smaller the value, the closer the landmark is to the camera. The magnitude of z uses roughly the same scale as x.
   
