@@ -11,10 +11,10 @@ import cv2
 
   
 #lib.detector_showcase()
-lib.playground()
+#lib.playground()
 #lib.camera_test()
 #lib.camera_class_test()
-#lib.stickfigure_videotest()
+lib.stickfigure_videotest()
 
 
 

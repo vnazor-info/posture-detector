@@ -16,6 +16,7 @@ from PIL import Image
 from . import Camera
 from . import Detector
 from . import Landmark
+import math
 
 def camera_test():
   #picam = Picamera2()
@@ -187,7 +188,7 @@ def stickfigure_videotest():
       data=np_image
     )
     detect_result = detect.detect(whole_img)
-    show_img=whole_imgq
+    show_img=whole_img
     for result in detect_result:
       #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
       show_img = stick_figure.draw_landmark(person_crop=whole_img)
@@ -199,48 +200,33 @@ def stickfigure_videotest():
     #crop_image = cv2.imread(drawlandmarks.jpg)
     #cv2.imwrite("points_detection.jpg", img_landfmarks)
       cv2.imshow("landmarks", show_img)
+
+    left_shoulder = stick_figure.pose_landmarks_proto.landmark[11]
+    right_shoulder = stick_figure.pose_landmarks_proto.landmark[12]
+    left_hip = stick_figure.pose_landmarks_proto.landmark[23]
+    right_hip = stick_figure.pose_landmarks_proto.landmark[24]
+    left_knee = stick_figure.pose_landmarks_proto.landmark[25]
+    right_knee = stick_figure.pose_landmarks_proto.landmark[26]
+    right_elbow = stick_figure.pose_landmarks_proto.landmark[14]
+    left_elbow = stick_figure.pose_landmarks_proto.landmark[13]
     
+
+    if cv2.waitKey(1) == ord('p'):
+      print("left_shoulder"), print (left_shoulder)
+      print("right_shoulder"), print(right_shoulder)
+      print("left_hip"), print(left_hip)
+      print("right_hip"), print(right_hip)
+      print("left_knee"), print(left_hip)
+      print("right_knee"), print(right_knee)
+      print("left_elbow"), print(left_elbow)
+      print("right_elbow"), print(right_elbow)
+      
+  
     if cv2.waitKey(1) == ord('q'):
       cv2.destroyAllWindows()
       break
 
 
 def playground():
-  stick_figure = Landmark.Landmark("resources/pose_landmarker_heavy.task")
-  detect = Detector.Detector(cfg.MODEL_PATH)
-  cam = Camera.Camera()
-
-  while True:
-    cv_image = cv2.imread("resources/man-standing.jpg")
-    #cv_image = cam.capture_image()
-    np_image = np.array(cv_image)
-    whole_img = mp.Image(
-      image_format=mp.ImageFormat.SRGB,
-      data=np_image
-    )
-    detect_result = detect.detect(whole_img)
-    show_img=whole_img
-    for _ in detect_result:
-      #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
-      show_img = stick_figure.draw_landmark(person_crop=whole_img)
-    #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
-    #def draw_landmarks_on_image(rgb_image, detection_result):
-      #pose_landmarks_list = detection_result.pose_landmarks
-
-    # annotated_image = np.copy(rgb_image)
-    #crop_image = cv2.imread(drawlandmarks.jpg)
-    #cv2.imwrite("points_detection.jpg", img_landfmarks)
-      cv2.imshow("landmarks", show_img)
-      
-    if cv2.waitKey(1) == ord('p'):
-      a=0
-      for point in stick_figure.pose_landmarks_list:
-        print(f' {a}.) x: {point} \n')
-        a=a+1
-
-    if cv2.waitKey(1) == ord('q'):
-      cv2.destroyAllWindows()
-      break
-
-    #z: The landmark depth, with the depth at the midpoint of the hips as the origin. The smaller the value, the closer the landmark is to the camera. The magnitude of z uses roughly the same scale as x.
-  
+  #code for testing new stuff
+  pass

@@ -10,12 +10,13 @@ class Camera:
 
         #self.config = self.picam.create_preview_configuration()
         #self.picam.configure(self.config)
-        self.cam = cv2.VideoCapture(2)
+        self.cam = cv2.VideoCapture(0)
         self.frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
         
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.out = cv2.VideoWriter('output.mp4', self.fourcc, 30, (self.frame_width, self.frame_height))
+        print(self.frame_width, self.frame_height)
         
 
 
