@@ -14,7 +14,8 @@ class Landmark:
             base_options=self.base_options,
             output_segmentation_masks=True)
         self.detector = vision.PoseLandmarker.create_from_options(self.options)
-
+        self.landmark_list = []
+        
     
     def draw_landmark(self, person_crop):
 
@@ -37,6 +38,15 @@ class Landmark:
                 self.pose_landmarks_proto,
                 solutions.pose.POSE_CONNECTIONS,
                 solutions.drawing_styles.get_default_pose_landmarks_style())
+
+        landmark_list = []
+        for idx in self.pose_landmarks_proto.landmark:
+            landmark_list.append((idx.x, idx.y))
+        
+        self.landmark_list = landmark_list
         return annotated_image
             #cv2.imwrite("drawlandmarks.jpg", detection_result)
             # STEP 5: Process the detection result. In this case, visualize it.
+
+    def get_landmarks(self):
+        return 

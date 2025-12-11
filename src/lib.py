@@ -209,17 +209,28 @@ def stickfigure_videotest():
     right_knee = stick_figure.pose_landmarks_proto.landmark[26]
     right_elbow = stick_figure.pose_landmarks_proto.landmark[14]
     left_elbow = stick_figure.pose_landmarks_proto.landmark[13]
-    
 
+    dictionary = {
+      "left_shoulder": (left_shoulder.x, left_shoulder.y),
+      "right_shoulder": (right_shoulder.x, right_shoulder.y),  
+      "left_hip": (left_hip.x, left_hip.y),
+      "right_hip": (right_hip.x, right_hip.y),
+      "left_knee": (left_knee.x, left_knee.y),
+      "right_knee": (right_knee.x, right_knee.y),
+      "left_elbow": (left_elbow.x, left_elbow.y),
+      "right_elbow": (right_elbow.x, right_elbow.y)
+    }
+    
     if cv2.waitKey(1) == ord('p'):
-      print("left_shoulder"), print (left_shoulder)
-      print("right_shoulder"), print(right_shoulder)
-      print("left_hip"), print(left_hip)
-      print("right_hip"), print(right_hip)
-      print("left_knee"), print(left_hip)
-      print("right_knee"), print(right_knee)
-      print("left_elbow"), print(left_elbow)
-      print("right_elbow"), print(right_elbow)
+      print("left_shoulder"), print (dictionary["left_shoulder"])
+      print("right_shoulder"), print(dictionary["right_shoulder"])
+      print("left_hip"), print(dictionary["left_hip"])
+      print("right_hip"), print(dictionary["right_hip"])
+      print("left_knee"), print(dictionary["left_knee"])
+      print("right_knee"), print(dictionary["right_knee"])
+      print("left_elbow"), print(dictionary["left_elbow"])
+      print("right_elbow"), print(dictionary["right_elbow"])
+      print(stick_figure.landmark_list)
       
   
     if cv2.waitKey(1) == ord('q'):
