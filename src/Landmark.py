@@ -14,7 +14,7 @@ class Landmark:
             base_options=self.base_options,
             output_segmentation_masks=True)
         self.detector = vision.PoseLandmarker.create_from_options(self.options)
-        self.landmark_list = []
+        
         
     
     def draw_landmark(self, person_crop):

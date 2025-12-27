@@ -230,14 +230,29 @@ def stickfigure_videotest():
       print("right_knee"), print(dictionary["right_knee"])
       print("left_elbow"), print(dictionary["left_elbow"])
       print("right_elbow"), print(dictionary["right_elbow"])
-      print(stick_figure.landmark_list)
       
   
     if cv2.waitKey(1) == ord('q'):
+      cv2.imwrite("final_landmarks.jpg", show_img)
       cv2.destroyAllWindows()
       break
 
+    def angle_3_points(a, b, c):
+      # b is the intersection point
+      ang = math.degrees(
+          math.atan2(c[1]-b[1], c[0]-b[0]) - 
+          math.atan2(a[1]-b[1], a[0]-b[0])
+      )
+      return ang + 360 if ang < 0 else ang
+
+# Example: 90 degree corner
+    p1 = (dictionary["right_shoulder"])
+    p_center = (dictionary["left_shoulder"])
+    p2 = (dictionary["left_elbow"])
+
+    if cv2.waitKey(1) == ord('a'):
+      print(f"Angle: {angle_3_points(p1, p_center, p2)}°")
 
 def playground():
   #code for testing new stuff
-  pass
+  return 0
