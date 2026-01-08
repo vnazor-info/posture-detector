@@ -40,8 +40,8 @@ class Landmark:
                 solutions.drawing_styles.get_default_pose_landmarks_style())
 
         landmark_list = []
-        for idx in self.pose_landmarks_proto.landmark:
-            landmark_list.append((idx.x, idx.y))
+        #for idx in self.pose_landmarks_proto.landmark:
+        #    landmark_list.append((idx.x, idx.y))
         
         self.landmark_list = landmark_list
         return annotated_image

@@ -201,7 +201,6 @@ def stickfigure_videotest():
     #cv2.imwrite("points_detection.jpg", img_landfmarks)
       cv2.imshow("landmarks", show_img)
 
-    left_shoulder = stick_figure.pose_landmarks_proto.landmark[11]
     right_shoulder = stick_figure.pose_landmarks_proto.landmark[12]
     left_hip = stick_figure.pose_landmarks_proto.landmark[23]
     right_hip = stick_figure.pose_landmarks_proto.landmark[24]
@@ -209,7 +208,7 @@ def stickfigure_videotest():
     right_knee = stick_figure.pose_landmarks_proto.landmark[26]
     right_elbow = stick_figure.pose_landmarks_proto.landmark[14]
     left_elbow = stick_figure.pose_landmarks_proto.landmark[13]
-
+    left_shoulder = stick_figure.pose_landmarks_proto.landmark[11]
     dictionary = {
       "left_shoulder": (left_shoulder.x, left_shoulder.y),
       "right_shoulder": (right_shoulder.x, right_shoulder.y),  
@@ -218,9 +217,32 @@ def stickfigure_videotest():
       "left_knee": (left_knee.x, left_knee.y),
       "right_knee": (right_knee.x, right_knee.y),
       "left_elbow": (left_elbow.x, left_elbow.y),
-      "right_elbow": (right_elbow.x, right_elbow.y)
+      "right_elbow": (right_elbow.x, right_elbow.y),
     }
-    
+
+    left_arm = {
+      "left_shoulder" : (left_shoulder.x, left_shoulder.y),
+      "left_elbow": (left_elbow.x, left_elbow.y),
+    }
+    right_arm = {
+      "right_shoulder": (right_shoulder.x, right_shoulder.y),
+      "right_elbow": (right_elbow.x, right_elbow.y),
+    }
+    left_leg = {
+      "left_hip": (left_hip.x, left_hip.y),
+      "left_knee": (left_knee.x, left_knee.y),
+    }
+    right_leg = {
+      "right_hip": (right_hip.x, right_hip.y),
+      "right_knee": (right_knee.x, right_knee.y),
+    }
+    dict_parts = {
+      "left_arm" : left_arm,
+      "right_arm" : right_arm,
+      "left_leg" : left_leg,
+      "right_leg" : right_leg
+    }
+  
     if cv2.waitKey(1) == ord('p'):
       print("left_shoulder"), print (dictionary["left_shoulder"])
       print("right_shoulder"), print(dictionary["right_shoulder"])
@@ -229,29 +251,43 @@ def stickfigure_videotest():
       print("left_knee"), print(dictionary["left_knee"])
       print("right_knee"), print(dictionary["right_knee"])
       print("left_elbow"), print(dictionary["left_elbow"])
-      print("right_elbow"), print(dictionary["right_elbow"])
+      print("right_elbow"), print(dictionary_parts["left_hand"])
+
+    def angle_3_points(a, b, c):
+    # b is the intersection point
+      ang = math.degrees(
+        math.atan2(c[1]-b[1], c[0]-b[0]) - 
+        math.atan2(a[1]-b[1], a[0]-b[0])
+    )
+      return ang + 360 if ang < 0 else ang
+
+    def percent_difference(num1, num2):
+      if (num1 + num2) == 0:
+        return 0 # Both are zero
+      return (abs(num2 - num1) / ((num1 + num2) / 2)) * 100
+
+  # Example: Comparing 20 and 30
+  
+
+  # Example: 90 degree corner                                 
+    p1 = (dict_parts["left_arm"]["left_elbow"])             
+    p_center = (dict_parts["left_arm"]["left_shoulder"])
+    p2 = (dict_parts["right_arm"]["right_shoulder"])
+    final_angel = angle_3_points(p2, p_center, p1)
       
   
     if cv2.waitKey(1) == ord('q'):
+      p1 = (dict_parts["left_arm"]["left_elbow"])
+      p_center = (dict_parts["left_arm"]["left_shoulder"])
+      p2 = (dict_parts["right_arm"]["right_elbow"])
       cv2.imwrite("final_landmarks.jpg", show_img)
       cv2.destroyAllWindows()
       break
-
-    def angle_3_points(a, b, c):
-      # b is the intersection point
-      ang = math.degrees(
-          math.atan2(c[1]-b[1], c[0]-b[0]) - 
-          math.atan2(a[1]-b[1], a[0]-b[0])
-      )
-      return ang + 360 if ang < 0 else ang
-
-# Example: 90 degree corner
-    p1 = (dictionary["right_shoulder"])
-    p_center = (dictionary["left_shoulder"])
-    p2 = (dictionary["left_elbow"])
-
     if cv2.waitKey(1) == ord('a'):
-      print(f"Angle: {angle_3_points(p1, p_center, p2)}°")
+      print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
+      print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
+
+  
 
 def playground():
   #code for testing new stuff
