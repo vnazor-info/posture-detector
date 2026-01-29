@@ -10,6 +10,7 @@ class Camera:
 
         #self.config = self.picam.create_preview_configuration()
         #self.picam.configure(self.config)
+        self.win_name = "Test suite"
         self.cam = cv2.VideoCapture(0)
         self.frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -76,3 +77,11 @@ class Camera:
         ret, frame = self.cam.read()
         #return self.picam.capture_image().convert('RGB')
         return frame
+
+    def open_window(self):
+        cv2.namedWindow(self.win_name, cv2.WINDOW_AUTOSIZE)
+
+    def present_img(self, image):
+        cv2.imshow("Presented Image", image)
+        if cv2.waitKey(10) == ord('q'):
+            cv2.destroyWindow("Camera")

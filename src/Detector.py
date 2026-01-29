@@ -17,7 +17,7 @@ class Detector:
         options = vision.ObjectDetectorOptions(base_options=base_options,
                                                 score_threshold=0.5)
         self.detector = vision.ObjectDetector.create_from_options(options)
-
+        
     def detect(self, image): #Samo osobe detektiramo
         
         detection_result = self.detector.detect(image)

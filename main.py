@@ -11,6 +11,7 @@ import cv2
 
   
 #lib.detector_showcase()
-lib.stickfigure_videotest()
+#lib.stickfigure_videotest()
 #lib.camera_test()
 #lib.camera_class_test()
+lib.playground()

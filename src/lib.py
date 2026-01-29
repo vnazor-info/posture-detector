@@ -16,7 +16,19 @@ from PIL import Image
 from . import Camera
 from . import Detector
 from . import Landmark
-import math
+
+def angle_3_points(a, b, c):
+# b is the intersection point
+  ang = math.degrees(
+    math.atan2(c[1]-b[1], c[0]-b[0]) - 
+    math.atan2(a[1]-b[1], a[0]-b[0])
+)
+  return ang + 360 if ang < 0 else ang
+
+def percent_difference(num1, num2):
+  if (num1 + num2) == 0:
+    return 0 # Both are zero
+  return (abs(num2 - num1) / ((num1 + num2) / 2)) * 100
 
 def camera_test():
   #picam = Picamera2()
@@ -189,9 +201,12 @@ def stickfigure_videotest():
     )
     detect_result = detect.detect(whole_img)
     show_img=whole_img
+    print("detect_result", detect_result)
     for result in detect_result:
       #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
       show_img = stick_figure.draw_landmark(person_crop=whole_img)
+      if result.categories[0].category_name != "person":
+        break
     #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
     #def draw_landmarks_on_image(rgb_image, detection_result):
       #pose_landmarks_list = detection_result.pose_landmarks
@@ -200,48 +215,48 @@ def stickfigure_videotest():
     #crop_image = cv2.imread(drawlandmarks.jpg)
     #cv2.imwrite("points_detection.jpg", img_landfmarks)
       cv2.imshow("landmarks", show_img)
+      
+      right_shoulder = stick_figure.pose_landmarks_proto.landmark[12]
+      left_hip = stick_figure.pose_landmarks_proto.landmark[23]
+      right_hip = stick_figure.pose_landmarks_proto.landmark[24]
+      left_knee = stick_figure.pose_landmarks_proto.landmark[25]
+      right_knee = stick_figure.pose_landmarks_proto.landmark[26]
+      right_elbow = stick_figure.pose_landmarks_proto.landmark[14]
+      left_elbow = stick_figure.pose_landmarks_proto.landmark[13]
+      left_shoulder = stick_figure.pose_landmarks_proto.landmark[11]
+      dictionary = {
+        "left_shoulder": (left_shoulder.x, left_shoulder.y),
+        "right_shoulder": (right_shoulder.x, right_shoulder.y),  
+        "left_hip": (left_hip.x, left_hip.y),
+        "right_hip": (right_hip.x, right_hip.y),
+        "left_knee": (left_knee.x, left_knee.y),
+        "right_knee": (right_knee.x, right_knee.y),
+        "left_elbow": (left_elbow.x, left_elbow.y),
+        "right_elbow": (right_elbow.x, right_elbow.y),
+      }
 
-    right_shoulder = stick_figure.pose_landmarks_proto.landmark[12]
-    left_hip = stick_figure.pose_landmarks_proto.landmark[23]
-    right_hip = stick_figure.pose_landmarks_proto.landmark[24]
-    left_knee = stick_figure.pose_landmarks_proto.landmark[25]
-    right_knee = stick_figure.pose_landmarks_proto.landmark[26]
-    right_elbow = stick_figure.pose_landmarks_proto.landmark[14]
-    left_elbow = stick_figure.pose_landmarks_proto.landmark[13]
-    left_shoulder = stick_figure.pose_landmarks_proto.landmark[11]
-    dictionary = {
-      "left_shoulder": (left_shoulder.x, left_shoulder.y),
-      "right_shoulder": (right_shoulder.x, right_shoulder.y),  
-      "left_hip": (left_hip.x, left_hip.y),
-      "right_hip": (right_hip.x, right_hip.y),
-      "left_knee": (left_knee.x, left_knee.y),
-      "right_knee": (right_knee.x, right_knee.y),
-      "left_elbow": (left_elbow.x, left_elbow.y),
-      "right_elbow": (right_elbow.x, right_elbow.y),
-    }
-
-    left_arm = {
-      "left_shoulder" : (left_shoulder.x, left_shoulder.y),
-      "left_elbow": (left_elbow.x, left_elbow.y),
-    }
-    right_arm = {
-      "right_shoulder": (right_shoulder.x, right_shoulder.y),
-      "right_elbow": (right_elbow.x, right_elbow.y),
-    }
-    left_leg = {
-      "left_hip": (left_hip.x, left_hip.y),
-      "left_knee": (left_knee.x, left_knee.y),
-    }
-    right_leg = {
-      "right_hip": (right_hip.x, right_hip.y),
-      "right_knee": (right_knee.x, right_knee.y),
-    }
-    dict_parts = {
-      "left_arm" : left_arm,
-      "right_arm" : right_arm,
-      "left_leg" : left_leg,
-      "right_leg" : right_leg
-    }
+      left_arm = {
+        "left_shoulder" : (left_shoulder.x, left_shoulder.y),
+        "left_elbow": (left_elbow.x, left_elbow.y),
+      }
+      right_arm = {
+        "right_shoulder": (right_shoulder.x, right_shoulder.y),
+        "right_elbow": (right_elbow.x, right_elbow.y),
+      }
+      left_leg = {
+        "left_hip": (left_hip.x, left_hip.y),
+        "left_knee": (left_knee.x, left_knee.y),
+      }
+      right_leg = {
+        "right_hip": (right_hip.x, right_hip.y),
+        "right_knee": (right_knee.x, right_knee.y),
+      }
+      dict_parts = {
+        "left_arm" : left_arm,
+        "right_arm" : right_arm,
+        "left_leg" : left_leg,
+        "right_leg" : right_leg
+      }
   
     if cv2.waitKey(1) == ord('p'):
       print("left_shoulder"), print (dictionary["left_shoulder"])
@@ -253,42 +268,47 @@ def stickfigure_videotest():
       print("left_elbow"), print(dictionary["left_elbow"])
       print("right_elbow"), print(dictionary_parts["left_hand"])
 
-    def angle_3_points(a, b, c):
-    # b is the intersection point
-      ang = math.degrees(
-        math.atan2(c[1]-b[1], c[0]-b[0]) - 
-        math.atan2(a[1]-b[1], a[0]-b[0])
-    )
-      return ang + 360 if ang < 0 else ang
 
-    def percent_difference(num1, num2):
-      if (num1 + num2) == 0:
-        return 0 # Both are zero
-      return (abs(num2 - num1) / ((num1 + num2) / 2)) * 100
 
   # Example: Comparing 20 and 30
   
 
   # Example: 90 degree corner                                 
-    p1 = (dict_parts["left_arm"]["left_elbow"])             
-    p_center = (dict_parts["left_arm"]["left_shoulder"])
-    p2 = (dict_parts["right_arm"]["right_shoulder"])
-    final_angel = angle_3_points(p2, p_center, p1)
-      
-  
-    if cv2.waitKey(1) == ord('q'):
-      p1 = (dict_parts["left_arm"]["left_elbow"])
+      p1 = (dict_parts["left_arm"]["left_elbow"])             
       p_center = (dict_parts["left_arm"]["left_shoulder"])
-      p2 = (dict_parts["right_arm"]["right_elbow"])
-      cv2.imwrite("final_landmarks.jpg", show_img)
-      cv2.destroyAllWindows()
-      break
-    if cv2.waitKey(1) == ord('a'):
-      print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
-      print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
+      p2 = (dict_parts["right_arm"]["right_shoulder"])
+      final_angel = angle_3_points(p2, p_center, p1)
+        
+
+      if cv2.waitKey(1) == ord('q'):
+        p1 = (dict_parts["left_arm"]["left_elbow"])
+        p_center = (dict_parts["left_arm"]["left_shoulder"])
+        p2 = (dict_parts["right_arm"]["right_elbow"])
+        cv2.imwrite("final_landmarks.jpg", show_img)
+        cv2.destroyAllWindows()
+        break
+      if cv2.waitKey(1) == ord('a'):
+        print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
+        print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
 
   
 
 def playground():
   #code for testing new stuff
+  lap_cam = Camera.Camera()
+  detect = Landmark.Detective()
+  still_image = None
+  while True:
+    lap_cam.open_window()
+    still_image = lap_cam.capture_image()
+    
+    whole_img = mp.Image(
+      image_format=mp.ImageFormat.SRGB,
+      data=still_image
+    )
+    if detect.person_detected(whole_img):
+      landmark_img = detect.draw_landmarks(whole_img)
+      
+      lap_cam.present_img(landmark_img)
+
   return 0
