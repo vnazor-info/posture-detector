@@ -69,6 +69,16 @@ class Detective:
         detect = self.detector.detect(person_crop)
         self.pose_landmarks = detect.pose_landmarks
 
+        for lm in range(len(self.pose_landmarks)):
+            actual_lm = self.pose_landmarks[lm]
+            self.pose_landmarks_list = landmark_pb2.NormalizedLandmarkList()
+            self.pose_landmarks_list.landmark.extend([
+                landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in actual_lm
+            ])
+
+        #OOVO MORA BITI TU JER KAD IMAMP LISTU ONA JE NESTED, SA OVIME MOZEMO VADITI LANDMARK
+        #INACE JE OVAKO [[x1,y1,z1]], NAMA TREBA [x1,y1,z1]
+
         if not detect.pose_landmarks:
             self.pose_landmarks = None
             detected = False
@@ -78,13 +88,15 @@ class Detective:
         return self.pose_landmarks
 
     def draw_landmarks(self, image):
-        for landmark in self.pose_landmarks:
-            print(landmark)
-            solutions.drawing_utils.draw_landmarks(
-                image,
-                landmark,
-                solutions.pose.POSE_CONNECTIONS,
-                solutions.drawing_styles.get_default_pose_landmarks_style())
-        return annotated_image
+        annotated_image = image.numpy_view().copy()
+        #OVO PRETVARA SLIKU U NUMPY ARRAY DA BI SE MOGLA ISCRTAVATI
+        
+        solutions.drawing_utils.draw_landmarks(
+            annotated_image,
+            self.pose_landmarks_list,
+            solutions.pose.POSE_CONNECTIONS,
+            solutions.drawing_styles.get_default_pose_landmarks_style())
+        image = annotated_image 
+        return image
             #cv2.imwrite("drawlandmarks.jpg", detection_result)
             # STEP 5: Process the detection result. In this case, visualize it.

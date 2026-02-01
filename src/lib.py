@@ -16,6 +16,9 @@ from PIL import Image
 from . import Camera
 from . import Detector
 from . import Landmark
+from tkinter import *
+import threading
+
 
 def angle_3_points(a, b, c):
 # b is the intersection point
@@ -291,24 +294,60 @@ def stickfigure_videotest():
         print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
         print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
 
+var = 1
   
+def tktinker_test():
+  print("tkinter test")
+  root = Tk()
+
+  # Widgets are added here
+  label = Label(root, text="Posture Detector")
+  label.pack(pady=10)
+
+  button = Button(root, text="Start", width=25, command=thread)
+  button1 = Button(root, text="Stop", width=25, command=close_window)
+  button1.pack()
+  button.pack()
+  root.mainloop()
+
+def thread():
+  t = threading.Thread(target=start_window)
+  t.start()
+
+def start_window():
+  print("start window")
+  global var
+  var = 1
+  playground()
+
+def close_window():
+  print("close window")
+  global var
+  var = 0
+    
 
 def playground():
   #code for testing new stuff
+  global var
   lap_cam = Camera.Camera()
   detect = Landmark.Detective()
-  still_image = None
+  print (var)
   while True:
-    lap_cam.open_window()
-    still_image = lap_cam.capture_image()
     
+    lap_cam.open_window()
+    print("in the loop")
+    still_image = lap_cam.capture_image()
     whole_img = mp.Image(
       image_format=mp.ImageFormat.SRGB,
       data=still_image
     )
+  
     if detect.person_detected(whole_img):
       landmark_img = detect.draw_landmarks(whole_img)
-      
-      lap_cam.present_img(landmark_img)
+    
+    lap_cam.present_img(landmark_img)
+    if var == 0:
+      print("breaking loop")
+      cv2.destroyAllWindows()
+      break
 
-  return 0

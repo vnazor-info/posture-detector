@@ -14,4 +14,6 @@ import cv2
 #lib.stickfigure_videotest()
 #lib.camera_test()
 #lib.camera_class_test()
-lib.playground()
+lib.tktinker_test()
+#lib.playground()
+
