@@ -294,7 +294,9 @@ def stickfigure_videotest():
         print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
         print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
 
-var = 1
+break_var = 1
+save_var = 0
+racunanje_var = 0
   
 def tktinker_test():
   print("tkinter test")
@@ -304,10 +306,18 @@ def tktinker_test():
   label = Label(root, text="Posture Detector")
   label.pack(pady=10)
 
-  button = Button(root, text="Start", width=25, command=thread)
-  button1 = Button(root, text="Stop", width=25, command=close_window)
-  button1.pack()
-  button.pack()
+  button = Button(root, text="Start", width=7, command=thread)
+  button1 = Button(root, text="Stop", width=6, command=close_window)
+  button2 = Button(root, text="Save Image", width=12, command=save_image)
+  button3 = Button(root, text="Exit", width=6, command=root.quit)
+  button4 = Button(root, text="Calculate and save", width=18, command=calculate_and_save)
+  l = Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit")
+  l.pack()
+  button.pack(anchor=W, pady=5)
+  button1.pack(anchor=W, pady=5)
+  button2.pack(anchor=W, pady=5)
+  button3.pack(anchor=W, pady=5)
+  button4.pack(anchor=W, pady=5)
   root.mainloop()
 
 def thread():
@@ -316,26 +326,38 @@ def thread():
 
 def start_window():
   print("start window")
-  global var
-  var = 1
+  global break_var
+  break_var = 1
   playground()
 
 def close_window():
   print("close window")
-  global var
-  var = 0
+  global break_var
+  break_var = 0
     
+def save_image():  
+  print("save image")
+  global save_var
+  save_var = 1
+
+def calculate_and_save():
+  global racunanje_var
+  racunanje_var = 1
+  print("not implemented yet")
+
 
 def playground():
   #code for testing new stuff
-  global var
+  global break_var
+  global save_var
+  global racunanje_var
   lap_cam = Camera.Camera()
   detect = Landmark.Detective()
-  print (var)
+  print (break_var)
   while True:
     
-    lap_cam.open_window()
-    print("in the loop")
+    #lap_cam.open_window()
+    #print("in the loop")
     still_image = lap_cam.capture_image()
     whole_img = mp.Image(
       image_format=mp.ImageFormat.SRGB,
@@ -346,8 +368,16 @@ def playground():
       landmark_img = detect.draw_landmarks(whole_img)
     
     lap_cam.present_img(landmark_img)
-    if var == 0:
+    if break_var == 0:
       print("breaking loop")
       cv2.destroyAllWindows()
       break
-
+    if save_var == 1:
+      cv2.imwrite("landmark_image.jpg", landmark_img)
+      print("image saved")
+      save_var = 0
+    if racunanje_var == 1:
+      print("not implemented yet")
+      print(detect.racunanje(detect.dict_parts["left_arm"]["left_elbow"], detect.dict_parts["left_arm"]["left_shoulder"],detect.dict_parts["right_arm"]["right_shoulder"]  ))
+      racunanje_var = 0
+    
