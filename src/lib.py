@@ -336,6 +336,7 @@ def close_window():
   break_var = 0
     
 def save_image():  
+  sleep(3)
   print("save image")
   global save_var
   save_var = 1
@@ -377,7 +378,9 @@ def playground():
       print("image saved")
       save_var = 0
     if racunanje_var == 1:
-      print("not implemented yet")
-      print(detect.racunanje(detect.dict_parts["left_arm"]["left_elbow"], detect.dict_parts["left_arm"]["left_shoulder"],detect.dict_parts["right_arm"]["right_shoulder"]  ))
+      #print(detect.racunanje(detect.dict_parts["left_arm"]["left_elbow"], detect.dict_parts["left_arm"]["left_shoulder"],detect.dict_parts["right_arm"]["right_shoulder"]  ))
+      #a = [detect.dictionary["left_shoulder"], detect.dictionary["right_shoulder"]]
+      #b = [detect.dictionary["left_hip"], detect.dictionary["right_hip"]]
+      print(detect.calculate_angle("shoulders", "hips"))
       racunanje_var = 0
     

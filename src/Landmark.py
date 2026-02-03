@@ -58,6 +58,39 @@ class Landmark:
 
 class Detective:    
     def __init__(self):
+        self.nose = 0
+        self.left_eye_inner = 1
+        self.left_eye = 2
+        self.left_eye_outer = 3
+        self.right_eye_inner = 4
+        self.right_eye = 5
+        self.right_eye_outer = 6
+        self.left_ear = 7
+        self.right_ear = 8
+        self.mouth_left = 9
+        self.mouth_right = 10
+        self.left_shoulder = 11
+        self.right_shoulder = 12
+        self.left_elbow = 13
+        self.right_elbow = 14
+        self.left_wrist = 15
+        self.right_wrist = 16
+        self.left_pinky = 17
+        self.right_pinky = 18
+        self.left_index = 19
+        self.right_index = 20
+        self.left_thumb = 21
+        self.right_thumb = 22
+        self.left_hip = 23
+        self.right_hip = 24
+        self.left_knee = 25
+        self.right_knee = 26
+        self.left_ankle = 27
+        self.right_ankle = 28
+        self.left_heel = 29
+        self.right_heel = 30
+        self.left_foot_index = 31
+        self.right_foot_index = 32
         self.base_options = python.BaseOptions(model_asset_path='resources/pose_landmarker_heavy.task')
         self.options = vision.PoseLandmarkerOptions(
             base_options=self.base_options,
@@ -84,49 +117,6 @@ class Detective:
         if not detect.pose_landmarks:
             self.pose_landmarks = None
             detected = False
-        
-        right_shoulder = self.pose_landmarks_list.landmark[12]
-        left_hip = self.pose_landmarks_list.landmark[23]
-        right_hip = self.pose_landmarks_list.landmark[24]
-        left_knee = self.pose_landmarks_list.landmark[25]
-        right_knee = self.pose_landmarks_list.landmark[26]
-        right_elbow = self.pose_landmarks_list.landmark[14]
-        left_elbow = self.pose_landmarks_list.landmark[13]
-        left_shoulder = self.pose_landmarks_list.landmark[11]
-        self.dictionary = {
-            "left_shoulder": (left_shoulder.x, left_shoulder.y),
-            "right_shoulder": (right_shoulder.x, right_shoulder.y),  
-            "left_hip": (left_hip.x, left_hip.y),
-            "right_hip": (right_hip.x, right_hip.y),
-            "left_knee": (left_knee.x, left_knee.y),
-            "right_knee": (right_knee.x, right_knee.y),
-            "left_elbow": (left_elbow.x, left_elbow.y),
-            "right_elbow": (right_elbow.x, right_elbow.y),
-            }
-
-        self.left_arm = {
-            "left_shoulder" : (left_shoulder.x, left_shoulder.y),
-            "left_elbow": (left_elbow.x, left_elbow.y),
-            }
-        self.right_arm = {
-            "right_shoulder": (right_shoulder.x, right_shoulder.y),
-            "right_elbow": (right_elbow.x, right_elbow.y),
-            }
-        self.left_leg = {
-            "left_hip": (left_hip.x, left_hip.y),
-            "left_knee": (left_knee.x, left_knee.y),
-            }
-        self.right_leg = {
-            "right_hip": (right_hip.x, right_hip.y),
-            "right_knee": (right_knee.x, right_knee.y),
-            }
-        self.dict_parts = {
-            "left_arm" : self.left_arm,
-            "right_arm" : self.right_arm,
-            "left_leg" : self.left_leg,
-            "right_leg" : self.right_leg
-            }
-
         return detected
 
     def get_landmarks(self):
@@ -145,10 +135,42 @@ class Detective:
         image = annotated_image 
         return image
         #VRATI SLIKU SA ISCRTANIM LANDMARKIMA
+    def calculate_angle(self, line1_name, line2_name):
+        line1 = self.get_line(line1_name)
+        line2 = self.get_line(line2_name)
+        return self.__calculate_angle_2d(line1, line2)
 
-    def racunanje (self, a, b, c):
-        ang = math.degrees(
-        math.atan2(c[1]-b[1], c[0]-b[0]) - 
-        math.atan2(a[1]-b[1], a[0]-b[0])
-    )
-        return ang + 360 if ang < 0 else ang
+    def get_line(self, name):
+        if name == "shoulders":
+            return [[self.pose_landmarks_list.landmark[self.left_shoulder].x, self.pose_landmarks_list.landmark[self.left_shoulder].y],
+                    [self.pose_landmarks_list.landmark[self.right_shoulder].x, self.pose_landmarks_list.landmark[self.right_shoulder].y]]
+        elif name == "hips":
+            return [[self.pose_landmarks_list.landmark[self.left_hip].x, self.pose_landmarks_list.landmark[self.left_hip].y],
+                    [self.pose_landmarks_list.landmark[self.right_hip].x, self.pose_landmarks_list.landmark[self.right_hip].y]]
+        else:
+            raise ValueError("Unknown line name")
+
+    def __calculate_angle_2d(self, line1, line2):
+        # line1 = [(x1, y1), (x2, y2)]
+        
+        # 1. Vektor prve linije (kraj - početak)
+        v1_x = line1[1][0] - line1[0][0]
+        v1_y = line1[1][1] - line1[0][1]
+        
+        # 2. Vektor druge linije (kraj - početak)
+        v2_x = line2[1][0] - line2[0][0]
+        v2_y = line2[1][1] - line2[0][1]
+        
+        # 3. Izračun kuta svakog vektora u radijanima
+        angle1 = math.atan2(v1_y, v1_x)
+        angle2 = math.atan2(v2_y, v2_x)
+        
+        # 4. Razlika u stupnjevima
+        diff = abs(math.degrees(angle1 - angle2))
+        
+        # 5. Normalizacija na najmanji kut (oštri kut)
+        # Ovo osigurava da rezultat bude između 0 i 180
+        if diff > 180:
+            diff = 360 - diff
+            
+        return min(diff, 180 - diff)
