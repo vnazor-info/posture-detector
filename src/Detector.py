@@ -3,6 +3,14 @@ import mediapipe as mp
 import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+#Detector klasa koristi MediaPipe za detekciju objekata na slikama.
+#Koristi se ObjectDetector iz MediaPipe Vision modula za prepoznavanje objekata.
+
+#
+#Dolje navedeni kod se mne koristi u trenutnoj implementaciji, ali je zadržan radi budućih referenci.
+#Ako se odlučimo koristiti drugačiji model ili dodati dodatne funkcionalnosti, možda će biti potreban.
+#Ovaj dio nismo koristili jer oduzima resurse i usporava izvođenje programa.
+#
 
 class Detector:
     def __init__(self, model_path):
@@ -10,9 +18,10 @@ class Detector:
         ObjectDetector = mp.tasks.vision.ObjectDetector
         ObjectDetectorOptions = mp.tasks.vision.ObjectDetectorOptions
         VisionRunningMode = mp.tasks.vision.RunningMode
+        #Inicijalizacija potrebnih klasa iz MediaPipe biblioteke.
 
 
-        # STEP 2: Create an ObjectDetector object.
+        # Postavljanje opcija za detektor objekata, uključujući put do modela i prag povjerenja za detekciju.
         base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.ObjectDetectorOptions(base_options=base_options,
                                                 score_threshold=0.5)

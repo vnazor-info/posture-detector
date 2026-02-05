@@ -19,19 +19,30 @@ from . import Landmark
 from tkinter import *
 import threading
 
+#
+#Ovdje smo inportali potrebne biblioteke i module.
+#Neke trenutno nisu u upotrebi, ali se koriste u drugim dijelovima projekta.
+#
+#Dolje navedene funkcije trenutacno nisu u uporabi ali smo ih koristili za testiranje i mozda ce biti korisne u buducnosti.
+#
 
 def angle_3_points(a, b, c):
-# b is the intersection point
+#Tocak b je vrh kuta
   ang = math.degrees(
     math.atan2(c[1]-b[1], c[0]-b[0]) - 
     math.atan2(a[1]-b[1], a[0]-b[0])
 )
   return ang + 360 if ang < 0 else ang
 
+#Ovo je jedna od funkcija koje smo koristili za testiranje, ali trenutno nije u uporabi. Koristi se za izračunavanje kuta između tri točke, gdje je točka b vrh kuta.
+#Slicna funkcija se nalazi u Landmark modulu, ali smo ovu zadržali jer nam je bila korisna za testiranje i možda će biti korisna u budućnosti.
+
 def percent_difference(num1, num2):
   if (num1 + num2) == 0:
     return 0 # Both are zero
   return (abs(num2 - num1) / ((num1 + num2) / 2)) * 100
+
+#Ovo je još jedna funkcija koju smo koristili za testiranje, ali trenutno nije u uporabi. Koristi se za izračunavanje postotne razlike između dva broja.
 
 def camera_test():
   #picam = Picamera2()
@@ -48,11 +59,15 @@ def camera_test():
   #camera_image.save("output.jpg")
   print("camerat test")
 
+#Ovu funkciju smo koristili za testiranje kamere, ali trenutno nije u uporabi. Koristili smo Picamera2 biblioteku za pristup kameri i snimanje slike, ali smo je zamijenili našom vlastitom implementacijom kamere u Camera modulu.
+#Vise ne koristimo Picamera2 jer želimo da naš projekt bude kompatibilan sa različitim platformama, a ne samo sa Raspberry Pi-jem.   
+
 def camera_class_test():
   cam = Camera.Camera()
   cam.preview(5)
   cam.capture_save()
   #cam.off()
+  #Ovu funkciju smo koristili za testiranje naše implementacije kamere u Camera modulu. Napravili smo instancu kamere, pokrenuli preview, snimili sliku i spremili je. Ova funkcija nam je pomogla da testiramo funkcionalnost naše kamere prije nego što smo je integrirali u naš glavni program.
 
   def draw_landmarks_on_image(rgb_image, detection_result):
     pose_landmarks_list = detection_result.pose_landmarks
@@ -73,7 +88,9 @@ def camera_class_test():
         solutions.pose.POSE_CONNECTIONS,
         solutions.drawing_styles.get_default_pose_landmarks_style())
     return annotated_image
-  
+    #Ovu funkciju smo koristili za testiranje vizualizacije detekcije. Uzeli smo RGB sliku i rezultat detekcije, te smo nacrtali landmarke na slici koristeći Mediapipe-ove funkcije za crtanje. Ova funkcija nam je pomogla da testiramo kako se landmarki prikazuju na slici prije nego što smo je integrirali u naš glavni program.
+    #Ovu funkciju smo u cijelosti prebacili u Landmark modul, ali smo je zadržali ovdje jer nam je bila korisna za testiranje i možda će biti korisna u budućnosti.
+
 def visualize(image,detection_result) -> np.ndarray:
   """Draws bounding boxes on the input image and return it.
   Args:
@@ -82,14 +99,15 @@ def visualize(image,detection_result) -> np.ndarray:
   Returns:
     Image with bounding boxes.
   """
+  #Ovo su vazni komentari koje smo ostavili u funkciji visualize, jer nam pomažu da razumijemo što funkcija radi i kako se koristi. Ova funkcija crta bounding boxove na ulaznoj slici na temelju rezultata detekcije, te vraća sliku s nacrtanim bounding boxovima. Ova funkcija nam je pomogla da testiramo vizualizaciju detekcije prije nego što smo je integrirali u naš glavni program.
   for detection in detection_result.detections:
-    # Draw bounding_box
+    # Crta bounding box
     bbox = detection.bounding_box
     start_point = (bbox.origin_x, bbox.origin_y)
     end_point = bbox.origin_x + bbox.width, bbox.origin_y + bbox.height
     cv2.rectangle(image, start_point, end_point, cfg.TEXT_COLOR, 3)
 
-    # Draw label and score
+    # Crta label and score
     category = detection.categories[0]
     category_name = category.category_name
     probability = round(category.score, 2)
@@ -100,25 +118,29 @@ def visualize(image,detection_result) -> np.ndarray:
                 cfg.FONT_SIZE, cfg.TEXT_COLOR, cfg.FONT_THICKNESS)
 
   return image
+  #Ovu funkciju smo prebacili u Detector modul, ali smo je zadržali ovdje jer nam je bila korisna za testiranje i možda će biti korisna u budućnosti.
+  #Ovu funkciju kao i funkciju u Detector modulu vise ne koristimo, jer smo se fokusirali na detekciju i vizualizaciju landmarka, a ne na detekciju objekata i crtanje bounding boxeva. Međutim, ove funkcije nam mogu biti korisne u budućnosti ako želimo proširiti funkcionalnost našeg programa.
+  #Takoder crtanje bounding boxeva i labela znatno usporava rad programa, pa smo ih izbacili kako bismo poboljšali performanse.
+
 
 def crop_image(img, origin_y, origin_x, height, width):
   crop_img = img[origin_y:origin_y+height+10, origin_x-10:origin_x+width]
   cv2.imwrite("cropped.jpg", crop_img)
   return(crop_img)
+  #Ovu funkciju smo koristili za testiranje izrezivanja slike na temelju bounding boxa. Uzeli smo ulaznu sliku i koordinate bounding boxa, te smo izrezali odgovarajući dio slike i spremili ga kao novu sliku. Ova funkcija nam je pomogla da testiramo kako se slike izrezuju prije nego što smo je integrirali u naš glavni program.
 
 
 def detector_showcase():
   detector = Detector(model_path=cfg.MODEL_PATH)
-   
-  # STEP 4: Detect objects in the input image.
+  #Dodavanje varijable detector radi lakse inplementacije detektora iz Detector modula u funkciju.
   cv_image = cv2.imread(cfg.mp_image_path)
-  #open image then detect
+  #otvara sliku pa detekta.
   #koristiti cv2 za open image
   mp_image = mp.Image.create_from_file(cfg.mp_image_path)
   detection_results = detector.detect(mp_image) 
    
 
-  # STEP 5: Process the detection result. In this case, visualize it.
+  #Ispisuje rezultate detekcije na konzolu.
   print(detection_results)
 
   np_crop = detector.extract(mp_image.numpy_view(), detection_results[0].bounding_box)
@@ -146,6 +168,9 @@ DESIRED_WIDTH = 480
 RegionOfInterest = vision.InteractiveSegmenterRegionOfInterest
 NormalizedKeypoint = containers.keypoint.NormalizedKeypoint
 
+#Ovdje se nalaze varijable koje definiraju željene dimenzije slike za segmentaciju.
+#
+
 def resize_and_show(image):
   h, w = image.shape[:2]
   if h < w:
@@ -153,9 +178,10 @@ def resize_and_show(image):
   else:
     img = cv2.resize(image, (math.floor(w/(h/DESIRED_HEIGHT)), DESIRED_HEIGHT))
   cv2.imwrite("area.jpg",img)
+  #Ovu funkciju smo koristili za testiranje prikaza slike nakon segmentacije. Funkcija mijenja veličinu slike na željene dimenzije i sprema je kao novu sliku. Ova funkcija nam je pomogla da testiramo kako se segmentirane slike prikazuju prije nego što smo je integrirali u naš glavni program.
 
 def person_detect():
-  # Create the options that will be used for ImageSegmenter
+  #Stvara segmenter za osobu koristeći MediaPipe biblioteku.
   base_options = python.BaseOptions(model_asset_path='/home/vlatko/posture_detector/resources/selfie_segmenter_landscape.tflite')
   options = vision.ImageSegmenterOptions(base_options=base_options, output_category_mask=True)
   IMAGE_FILENAMES = ['/home/vlatko/Projects/posture-detector/resources/man_standing.jpg']
@@ -170,14 +196,14 @@ def person_detect():
 
       image = mp.Image.create_from_file(image_file_name)
 
-        # Retrieve the masks for the segmented image
+        # Dohvati maske za segmentiranu sliku.
 
       roi = RegionOfInterest(format=RegionOfInterest.Format.KEYPOINT,
                            keypoint=NormalizedKeypoint(DESIRED_HEIGHT/2, DESIRED_WIDTH/2))
       segmentation_result = segmenter.segment(image,roi)
       category_mask = segmentation_result.category_mask
 
-      # Generate solid color images for showing the output segmentation mask.
+      # Generiraj jednobojne slike za prikaz izlazne maske segmentacije.
       image_data = image.numpy_view()
       fg_image = np.zeros(image_data.shape, dtype=np.uint8)
       fg_image[:] = MASK_COLOR
@@ -189,12 +215,14 @@ def person_detect():
 
       print(f'Segmentation mask of {image}:')
       resize_and_show(output_image)
+      #Ispisuje segmentacijsku masku na konzolu i prikazuje segmentiranu sliku koristeći funkciju resize_and_show. Ova funkcija nam je pomogla da testiramo kako se segmentacija osobe izvodi prije nego što smo je integrirali u naš glavni program.
 
 
 def stickfigure_videotest():
   stick_figure = Landmark.Landmark("resources/pose_landmarker_heavy.task")
   detect = Detector.Detector(cfg.MODEL_PATH)
   cam = Camera.Camera()
+  #dodavanje varijabli stick_figure, detect i cam radi lakse inplementacije stick figure-a, detektora i kamere iz Landmark, Detector i Camera modula u funkciju.
 
   while True:
     cv_image = cam.capture_image()
@@ -203,23 +231,17 @@ def stickfigure_videotest():
       image_format=mp.ImageFormat.SRGB,
       data=np_image
     )
+    #dobivanje slike s kamere i pretvaranje u format koji Mediapipe može koristiti.
     detect_result = detect.detect(whole_img)
     show_img=whole_img
     print("detect_result", detect_result)
     for result in detect_result:
-      #crop_image = detect.crop_person(whole_img, bbox=result.bounding_box)
       show_img = stick_figure.draw_landmark(person_crop=whole_img)
       if result.categories[0].category_name != "person":
         break
-    #detector = Detector(model_path="resources/pose_landmarker_heavy.task")
-    #def draw_landmarks_on_image(rgb_image, detection_result):
-      #pose_landmarks_list = detection_result.pose_landmarks
-
-    # annotated_image = np.copy(rgb_image)
-    #crop_image = cv2.imread(drawlandmarks.jpg)
-    #cv2.imwrite("points_detection.jpg", img_landfmarks)
       cv2.imshow("landmarks", show_img)
-      
+    #popravljanje errora u kojem program prekida sa radom je ne postoji detektirana osoba. Ako detektor ne detektira osobu, program neće pokušavati crtati landmarke i neće prekidati sa radom. Također, ako se detektira osoba, prikazat će se slika s nacrtanim landmarkima.
+    #
       right_shoulder = stick_figure.pose_landmarks_proto.landmark[12]
       left_hip = stick_figure.pose_landmarks_proto.landmark[23]
       right_hip = stick_figure.pose_landmarks_proto.landmark[24]
@@ -272,12 +294,19 @@ def stickfigure_videotest():
       print("left_elbow"), print(dictionary["left_elbow"])
       print("right_elbow"), print(dictionary_parts["left_hand"])
 
+    #
+    #Dodavanje varijabli za posejdinu tocku na tijelu 
+    #Implementacija rijecnika(dictionary) koji sadrzi koordinate svih bitnih tocki na tijelu, kao i rijecnika(dict_parts) koji sadrzi koordinate bitnih tocki za svaki dio tijela (ruke i noge).
+    #
 
 
-  # Example: Comparing 20 and 30
+
+
   
 
-  # Example: 90 degree corner                                 
+  # Racunanje kuta između lijevog ramena, lijevog lakta i desnog ramena. Lijevo rame je vrh kuta, a lijevi lakat i desno rame su krajnje točke kuta.
+  # Koristimo funkciju angle_3_points za izračunavanje kuta između tri točke, gdje je lijevo rame vrh kuta, a lijevi lakat i desno rame su krajnje točke kuta.
+  # Ovo je bila jedna faza testiranja koda                              
       p1 = (dict_parts["left_arm"]["left_elbow"])             
       p_center = (dict_parts["left_arm"]["left_shoulder"])
       p2 = (dict_parts["right_arm"]["right_shoulder"])
@@ -291,9 +320,18 @@ def stickfigure_videotest():
         cv2.imwrite("final_landmarks.jpg", show_img)
         cv2.destroyAllWindows()
         break
+        #Omogucavanje izlaza iz petlje pritiskom na tipku 'q' i spremanje slike s nacrtanim landmarkima kao "final_landmarks.jpg".
+
       if cv2.waitKey(1) == ord('a'):
         print(f"Angle: {angle_3_points(p2, p_center, p1):.2f} degrees") 
         print(f"Percent Difference: {percent_difference(90, final_angel):.2f}%")
+        #Omogucavanje ispisa kuta i postotne razlike pritiskom na tipku 'a'.
+
+#
+#SAV KOD OVDJE JE KOD KOJI JE SLUZAO ZA TESTIRANJE RAZLICITIH DIJELOVA PROJEKTA
+#ODAVDE POCINJE DIO KODA KOJI SE TRENUTMNO KORISTI U PROJEKTU
+#
+#
 
 break_var = 1
 save_var = 0
@@ -301,57 +339,80 @@ racunanje_var = 0
 postotak = 0.0
 postotak2 = 0.0
 kut = 0.0
+#Dodavanje globalnih varijabli koje se koriste za kontrolu toka programa i spremanje rezultata izračuna.
+
 root = Tk()
 def tktinker_test():
   global postotak
   print("tkinter test")
   global root
+  #Pokretanje glavnog prozora i postavljanje naslova.
 
-  # Widgets are added here
+  #Postavljanje naslova glavnog prozora.
   label = Label(root, text="Posture Detector")
   label.pack(pady=10)
 
+  #Dodavanje gumba i njihovih funkcija.
   button = Button(root, text="Start", width=7, command=thread)
   button1 = Button(root, text="Stop", width=6, command=close_window)
   button2 = Button(root, text="Save Image", width=12, command=save_image)
   button3 = Button(root, text="Exit", width=6, command=root.quit)
   button4 = Button(root, text="Calculate and save", width=18, command=calculate_and_save)
-  l = Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit")
-  #T = Label(root, height=6, width=50, text=f"Kut: {postotak}")
 
-  #T.pack()
+  #Dodavanje uputa za korisnika.
+  l = Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit")
+  l1 = Label(root, text = "Kako bi program radio najbolje, preporučuje se da se nalazite na udaljenosti od kamere od 1.5 do 2 metra\nTakođer, preporučuje se da se nalazite u dobro osvijetljenoj prostoriji\nZa najbolje rezultate, preporučuje se da se nalazite ispred kamere, a ne sa strane")
+
+
+  #Dodavanje tekstovnih elemenata na glavni prozor.
   l.pack()
+  l1.pack()
+
+  #Dodavanje gumba na glavni prozor.
   button.pack(anchor=W, pady=5)
   button1.pack(anchor=W, pady=5)
   button2.pack(anchor=W, pady=5)
   button3.pack(anchor=W, pady=5)
   button4.pack(anchor=W, pady=5)
+
+  #Pokretanje glavne petlje prozora.
   root.mainloop()
+
+#
+#Funkcije za rukovanje gumbima u Tkinter sučelju.
+#
 
 def thread():
   t = threading.Thread(target=start_window)
   t.start()
+  #Pokretanje funkcije start_window u zasebnoj niti kako bi se izbjeglo blokiranje glavnog Tkinter sučelja.
 
 def start_window():
   print("start window")
   global break_var
   break_var = 1
+  #Postavljanje varijable break_var na 1 kako bi se pokrenula glavna petlja u funkciji playground.
   playground()
+  #Pokretanje glavne petlje za obradu slike i detekciju položaja tijela.
 
 def close_window():
   print("close window")
   global break_var
   break_var = 0
+  #Postavljanje varijable break_var na 0 kako bi se zaustavila glavna petlja u funkciji playground.
     
 def save_image():  
   sleep(3)
+  #Pauza od 3 sekunde prije spremanja slike.
   print("save image")
   global save_var
   save_var = 1
+  #Postavljanje varijable save_var na 1 kako bi se spremila trenutna slika u funkciji playground.
 
 def calculate_and_save():
   global racunanje_var
   racunanje_var = 1
+  #Postavljanje varijable racunanje_var na 1 kako bi se izračunali kutovi u funkciji playground.
 
 
 def playground():
@@ -363,49 +424,71 @@ def playground():
   global postotak2
   global kut
   global root
+  #Dodavanje globalnih varijabli koje se koriste unutar funkcije.
 
   T = Label(root, height=6, width=50, text=f"Kut: {postotak:.2f} degrees")
   T.pack()
   T1 = Label(root, height=6, width=50, text=f"Kut Koljena: {postotak2:.2f}%")
   T1.pack()
+  #Dodavanje tekstovnih elemenata na glavni prozor za prikaz izračunatih kutova.
+
   lap_cam = Camera.Camera()
   detect = Landmark.Detective()
-  print (break_var)
+  #Dodavanje varijabli lap_cam i detect radi lakse inplementacije kamere iz Camera modula i detektora iz Landmark modula u funkciju.
+
+  #Ulazimo u glavnu petlju koja će se vrtjeti dok god je varijabla break_var postavljena na 1.
   while True:
     
-    #lap_cam.open_window()
-    #print("in the loop")
     still_image = lap_cam.capture_image()
+    #Dobivanje slike s kamere.
+
     whole_img = mp.Image(
       image_format=mp.ImageFormat.SRGB,
       data=still_image
     )
+    #Pretvaranje slike u format koji Mediapipe može koristiti.
   
     if detect.person_detected(whole_img):
       landmark_img = detect.draw_landmarks(whole_img)
+      #Provjera je li osoba detektirana na slici. Ako jest, crtaju se landmarki na slici.
     
     lap_cam.present_img(landmark_img)
+    #Prikaz slike s nacrtanim landmarkima.
+
     if break_var == 0:
       print("breaking loop")
       cv2.destroyAllWindows()
+      #Ako je varijabla break_var postavljena na 0, izlazimo iz petlje i zatvaramo sva OpenCV prozore.
       break
+      #Omogućavanje izlaza iz petlje kada korisnik pritisne gumb "Stop" u Tkinter sučelju.
+
     if save_var == 1:
       cv2.imwrite("landmark_image.jpg", landmark_img)
+      #Spremanje trenutne slike s landmarkima kao "landmark_image.jpg".
       print("image saved")
       save_var = 0
+      #Ako je varijabla save_var postavljena na 1, spremamo trenutnu sliku s landmarkima kao "landmark_image.jpg" i resetiramo varijablu save_var na 0.
+
     if racunanje_var == 1:
-      #print(detect.racunanje(detect.dict_parts["left_arm"]["left_elbow"], detect.dict_parts["left_arm"]["left_shoulder"],detect.dict_parts["right_arm"]["right_shoulder"]  ))
-      #a = [detect.dictionary["left_shoulder"], detect.dictionary["right_shoulder"]]
-      #b = [detect.dictionary["left_hip"], detect.dictionary["right_hip"]]
       kut1 = detect.calculate_angle("shoulders", "hips")
       kut2 = detect.calculate_angle("hips", "knees")
+      #Definiranje varijabli kut1 i kut2 koje se izračunavaju pomoću funkcije calculate_angle iz Landmark modula. Kut1 predstavlja kut između ramena i kukova, a kut2 predstavlja kut između kukova i koljena.
+
       print(kut2)
       print(kut1)
+      #Ispisivanje izračunatih kutova na konzolu.
+
       postotak = kut1
       postotak2 = kut2
+      #Postavljanje varijabli postotak i postotak2 na izračunate kutove kako bi se mogli prikazati u Tkinter sučelju.
+
       racunanje_var = 0
+      #Ako je varijabla racunanje_var postavljena na 1, izračunavamo kutove, postavljamo ih u varijable postotak i postotak2, te resetiramo varijablu racunanje_var na 0.
+
       T.config(text=f"Kut: {postotak:.2f} degrees")
       T1.config(text=f"Kut Koljena: {postotak2:.2f} degrees")
+      #Ažuriranje tekstovnih elemenata u Tkinter sučelju s izračunatim kutovima.
       
   T.destroy()
   T1.destroy()
+  #Nakon izlaska iz petlje, uništavamo tekstovne elemente u Tkinter sučelju.
