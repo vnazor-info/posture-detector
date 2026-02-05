@@ -139,7 +139,8 @@ def detector_showcase():
 #if __name__ == "__main__":
   #print("Do some tests")
 
-DESIRED_HEIGHT = 480
+DESIRED_HEIGHT = 640
+
 DESIRED_WIDTH = 480
 
 RegionOfInterest = vision.InteractiveSegmenterRegionOfInterest
@@ -297,10 +298,14 @@ def stickfigure_videotest():
 break_var = 1
 save_var = 0
 racunanje_var = 0
-  
+postotak = 0.0
+postotak2 = 0.0
+kut = 0.0
+root = Tk()
 def tktinker_test():
+  global postotak
   print("tkinter test")
-  root = Tk()
+  global root
 
   # Widgets are added here
   label = Label(root, text="Posture Detector")
@@ -312,6 +317,9 @@ def tktinker_test():
   button3 = Button(root, text="Exit", width=6, command=root.quit)
   button4 = Button(root, text="Calculate and save", width=18, command=calculate_and_save)
   l = Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit")
+  #T = Label(root, height=6, width=50, text=f"Kut: {postotak}")
+
+  #T.pack()
   l.pack()
   button.pack(anchor=W, pady=5)
   button1.pack(anchor=W, pady=5)
@@ -344,7 +352,6 @@ def save_image():
 def calculate_and_save():
   global racunanje_var
   racunanje_var = 1
-  print("not implemented yet")
 
 
 def playground():
@@ -352,6 +359,15 @@ def playground():
   global break_var
   global save_var
   global racunanje_var
+  global postotak
+  global postotak2
+  global kut
+  global root
+
+  T = Label(root, height=6, width=50, text=f"Kut: {postotak:.2f} degrees")
+  T.pack()
+  T1 = Label(root, height=6, width=50, text=f"Kut Koljena: {postotak2:.2f}%")
+  T1.pack()
   lap_cam = Camera.Camera()
   detect = Landmark.Detective()
   print (break_var)
@@ -381,6 +397,15 @@ def playground():
       #print(detect.racunanje(detect.dict_parts["left_arm"]["left_elbow"], detect.dict_parts["left_arm"]["left_shoulder"],detect.dict_parts["right_arm"]["right_shoulder"]  ))
       #a = [detect.dictionary["left_shoulder"], detect.dictionary["right_shoulder"]]
       #b = [detect.dictionary["left_hip"], detect.dictionary["right_hip"]]
-      print(detect.calculate_angle("shoulders", "hips"))
+      kut1 = detect.calculate_angle("shoulders", "hips")
+      kut2 = detect.calculate_angle("hips", "knees")
+      print(kut2)
+      print(kut1)
+      postotak = kut1
+      postotak2 = kut2
       racunanje_var = 0
-    
+      T.config(text=f"Kut: {postotak:.2f} degrees")
+      T1.config(text=f"Kut Koljena: {postotak2:.2f} degrees")
+      
+  T.destroy()
+  T1.destroy()

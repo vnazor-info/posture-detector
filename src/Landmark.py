@@ -147,6 +147,9 @@ class Detective:
         elif name == "hips":
             return [[self.pose_landmarks_list.landmark[self.left_hip].x, self.pose_landmarks_list.landmark[self.left_hip].y],
                     [self.pose_landmarks_list.landmark[self.right_hip].x, self.pose_landmarks_list.landmark[self.right_hip].y]]
+        elif name == "knees":
+            return [[self.pose_landmarks_list.landmark[self.left_knee].x, self.pose_landmarks_list.landmark[self.left_knee].y],
+                    [self.pose_landmarks_list.landmark[self.right_knee].x, self.pose_landmarks_list.landmark[self.right_knee].y]]
         else:
             raise ValueError("Unknown line name")
 
