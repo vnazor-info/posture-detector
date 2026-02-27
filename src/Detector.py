@@ -24,7 +24,8 @@ class Detector:
         # Postavljanje opcija za detektor objekata, uključujući put do modela i prag povjerenja za detekciju.
         base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.ObjectDetectorOptions(base_options=base_options,
-                                                score_threshold=0.5)
+                                                score_threshold=0.5,
+                                                category_allowlist=["person"])
         self.detector = vision.ObjectDetector.create_from_options(options)
         
     def detect(self, image): #Samo osobe detektiramo

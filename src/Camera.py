@@ -19,7 +19,7 @@ class Camera:
         self.win_name = "Test suite"
         #Imenovanje prozora za prikaz kamere.
 
-        self.cam = cv2.VideoCapture(2)
+        self.cam = cv2.VideoCapture(0)
         #Inicijalizacija kamere pomoću OpenCV-a. Broj 2 označava indeks kamere (može varirati ovisno o sustavu).
 
         self.frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))

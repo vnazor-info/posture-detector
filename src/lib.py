@@ -18,6 +18,7 @@ from . import Detector
 from . import Landmark
 from tkinter import *
 import threading
+from itertools import chain
 
 #
 #Ovdje smo inportali potrebne biblioteke i module.
@@ -100,7 +101,7 @@ def visualize(image,detection_result) -> np.ndarray:
     Image with bounding boxes.
   """
   #Ovo su vazni komentari koje smo ostavili u funkciji visualize, jer nam pomažu da razumijemo što funkcija radi i kako se koristi. Ova funkcija crta bounding boxove na ulaznoj slici na temelju rezultata detekcije, te vraća sliku s nacrtanim bounding boxovima. Ova funkcija nam je pomogla da testiramo vizualizaciju detekcije prije nego što smo je integrirali u naš glavni program.
-  for detection in detection_result.detections:
+  for detection in detection_result:
     # Crta bounding box
     bbox = detection.bounding_box
     start_point = (bbox.origin_x, bbox.origin_y)
@@ -108,14 +109,14 @@ def visualize(image,detection_result) -> np.ndarray:
     cv2.rectangle(image, start_point, end_point, cfg.TEXT_COLOR, 3)
 
     # Crta label and score
-    category = detection.categories[0]
-    category_name = category.category_name
-    probability = round(category.score, 2)
-    result_text = category_name + ' (' + str(probability) + ')'
-    text_location = (cfg.MARGIN + bbox.origin_x,
-                     cfg.MARGIN + cfg.ROW_SIZE + bbox.origin_y)
-    cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
-                cfg.FONT_SIZE, cfg.TEXT_COLOR, cfg.FONT_THICKNESS)
+   # category = detection.categories[0]
+   # category_name = category.category_name
+   # probability = round(category.score, 2)
+   # result_text = category_name + ' (' + str(probability) + ')'
+   # text_location = (cfg.MARGIN + bbox.origin_x,
+   #                  cfg.MARGIN + cfg.ROW_SIZE + bbox.origin_y)
+   # cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
+   #             cfg.FONT_SIZE, cfg.TEXT_COLOR, cfg.FONT_THICKNESS)
 
   return image
   #Ovu funkciju smo prebacili u Detector modul, ali smo je zadržali ovdje jer nam je bila korisna za testiranje i možda će biti korisna u budućnosti.
@@ -131,20 +132,27 @@ def crop_image(img, origin_y, origin_x, height, width):
 
 
 def detector_showcase():
-  detector = Detector(model_path=cfg.MODEL_PATH)
+  detect = Detector.Detector(model_path='/home/infokab/Projects/posture-detector/resources/efficientdet_lite0.tflite')
   #Dodavanje varijable detector radi lakse inplementacije detektora iz Detector modula u funkciju.
-  cv_image = cv2.imread(cfg.mp_image_path)
-  #otvara sliku pa detekta.
-  #koristiti cv2 za open image
-  mp_image = mp.Image.create_from_file(cfg.mp_image_path)
-  detection_results = detector.detect(mp_image) 
-   
+  lap_cam = Camera.Camera()
+  #Dodavanje varijable lap_cam radi lakse inplementacije kamere iz Camera modula u funkciju.
 
-  #Ispisuje rezultate detekcije na konzolu.
-  print(detection_results)
-
-  np_crop = detector.extract(mp_image.numpy_view(), detection_results[0].bounding_box)
-  cv2.imwrite("cropped_detection.jpg", np.copy(np_crop))
+  while True:
+    cv_image = lap_cam.capture_image()
+    #otvara sliku pa detekta.
+    #koristiti cv2 za open image
+    mp_image = mp.Image(
+        image_format=mp.ImageFormat.SRGB,
+        data=cv_image
+      )
+    nested_detection_results = detect.detect(mp_image) 
+    
+    #Ispisuje rezultate detekcije na konzolu.
+    #print("Nested detection results:", nested_detection_results)
+    detected_image = visualize(cv_image, nested_detection_results)
+    lap_cam.present_img(detected_image)
+    
+  cv2.imwrite("cropped_detection.jpg", detected_image)
 #image_copy = np.copy(mp_image.numpy_view())
 #annotated_image = visualize(image_copy, detection_result)
 #rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
@@ -182,16 +190,15 @@ def resize_and_show(image):
 
 def person_detect():
   #Stvara segmenter za osobu koristeći MediaPipe biblioteku.
-  base_options = python.BaseOptions(model_asset_path='/home/vlatko/posture_detector/resources/selfie_segmenter_landscape.tflite')
+  base_options = python.BaseOptions(model_asset_path='/home/infokab/Projects/posture-detector/resources/efficientdet_lite0.tflite')
   options = vision.ImageSegmenterOptions(base_options=base_options, output_category_mask=True)
-  IMAGE_FILENAMES = ['/home/vlatko/Projects/posture-detector/resources/man_standing.jpg']
+  IMAGE_FILENAMES = ['/home/infokab/Projects/posture-detector/resources/man-standing.jpg']
 
   with vision.InteractiveSegmenter.create_from_options(options) as segmenter:
   
     for image_file_name in IMAGE_FILENAMES:
       BG_COLOR = (0, 0, 0) # gray
       MASK_COLOR = (255, 255, 255) # white
-      IMAGE_FILENAMES = ['/home/vlatko/Projects/posture-detector/resources/man_standing.jpg']
       images = {name: cv2.imread(name) for name in IMAGE_FILENAMES}
 
       image = mp.Image.create_from_file(image_file_name)

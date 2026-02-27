@@ -11,6 +11,7 @@ import cv2
 #Pokretanje različitih testova i demonstracija iz lib modula.
   
 #lib.detector_showcase()
+#lib.person_detect()
 #lib.stickfigure_videotest()
 #lib.camera_test()
 #lib.camera_class_test()
