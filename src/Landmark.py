@@ -6,6 +6,8 @@ import cv2
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 import math
+from src import costume_drawing_skin
+from src import drawing_spec
 #Ovdje se uvoze potrebne biblioteke, uključujući MediaPipe za obradu slike i računalni vid, OpenCV za rad s kamerom i slike, te math za matematičke operacije.
 
 
@@ -80,8 +82,7 @@ class Landmark:
 #
 
 class Detective:   
-
-    #Definiranje tocaka koje se koriste za indeksiranje landmarka.  
+ 
     def __init__(self):
         self.nose = 0
         self.left_eye_inner = 1
@@ -116,6 +117,8 @@ class Detective:
         self.right_heel = 30
         self.left_foot_index = 31
         self.right_foot_index = 32
+        self.threshold = 5.0
+        #Ovdje se definiraju indeksi za različite landmarke tijela, što omogućava lakši pristup tim landmarkima u funkcijama koje rade s njima. Na primjer, self.left_shoulder se koristi za pristup lijevom ramenu, self.right_knee za pristup desnom koljenu, itd. Ovi indeksi su standardni za MediaPipe Pose Landmarker model i omogućavaju nam da lako dohvatimo koordinate specifičnih dijelova tijela kada su detektirani na slici. Također, postavljen je prag (threshold) koji se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.
 
         #Inicijalizacija klase Detective koja postavlja indekse za različite landmarke tijela. Ovi indeksi se koriste za pristup specifičnim landmarkima u listi landmarka koju vraća detektor.
         self.base_options = python.BaseOptions(model_asset_path='resources/pose_landmarker_heavy.task')
@@ -140,6 +143,7 @@ class Detective:
             self.pose_landmarks_list.landmark.extend([
                 landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in actual_lm
             ])
+            
             #Ovdje se prolazi kroz svaki skup landmarka pronađenih na slici i sprema se u self.pose_landmarks_list kao NormalizedLandmarkList. Ova lista se koristi za daljnju obradu, poput iscrtavanja landmarka na slici ili izračunavanja kuteva između linija definiranih landmarkima.
 
         #OVO MORA BITI TU JER KAD IMAMO LISTU ONA JE NESTED, SA OVIME MOZEMO VADITI LANDMARK
@@ -164,7 +168,8 @@ class Detective:
             annotated_image,
             self.pose_landmarks_list,
             solutions.pose.POSE_CONNECTIONS,
-            solutions.drawing_styles.get_default_pose_landmarks_style())
+            costume_drawing_skin.get_default_pose_landmarks_style(),
+            drawing_spec.DrawingGreen())
             #OVO ISCRTAVA LANDMARKE NA SLIKU
 
         image = annotated_image 
@@ -219,3 +224,10 @@ class Detective:
         #Ovu funkciju koristimo za izračunavanje kuta između dvije linije u 2D prostoru. Funkcija prima dvije linije definirane kao liste koordinata početne i završne točke.
         #Koristi VEKTORSKU matematiku za izračun kuta između linija
         #Naglasak na vektorsku jer se linije ne sijeku niti na jednoj tocki prikazanoj na slici
+    
+    def odstupanja(self, angle, threshold):
+        if angle > threshold:
+            print("Odstupanje detektirano! Kut: ", angle)
+        else:
+            print("Držanje je u redu. Kut: ", angle)
+        #Funkcija za provjeru odstupanja kuta od određenog praga (threshold). Prima izračunati kut (angle) i prag (threshold), i vraća True ako je kut veći od praga, inače vraća False. Ova funkcija se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.

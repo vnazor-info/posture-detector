@@ -16,11 +16,12 @@ from PIL import Image
 from . import Camera
 from . import Detector
 from . import Landmark
+import tkinter.ttk as ttk
+import ttkthemes
 from tkinter import *
 import threading
 from itertools import chain
 
-#
 #Ovdje smo inportali potrebne biblioteke i module.
 #Neke trenutno nisu u upotrebi, ali se koriste u drugim dijelovima projekta.
 #
@@ -346,29 +347,34 @@ racunanje_var = 0
 postotak = 0.0
 postotak2 = 0.0
 kut = 0.0
+
+
 #Dodavanje globalnih varijabli koje se koriste za kontrolu toka programa i spremanje rezultata izračuna.
 
 root = Tk()
+# Create a style
+root.call("source", "/home/infokab/Projects/posture-detector/resources/Azure-ttk-theme/azure.tcl")
+root.call("set_theme", "dark")
 def tktinker_test():
+
   global postotak
   print("tkinter test")
   global root
   #Pokretanje glavnog prozora i postavljanje naslova.
 
   #Postavljanje naslova glavnog prozora.
-  label = Label(root, text="Posture Detector")
+  label =  ttk.Label(root, text="Posture Detector", style='Card.TFrame')
   label.pack(pady=10)
 
   #Dodavanje gumba i njihovih funkcija.
-  button = Button(root, text="Start", width=7, command=thread)
-  button1 = Button(root, text="Stop", width=6, command=close_window)
-  button2 = Button(root, text="Save Image", width=12, command=save_image)
-  button3 = Button(root, text="Exit", width=6, command=root.quit)
-  button4 = Button(root, text="Calculate and save", width=18, command=calculate_and_save)
-
+  button = ttk.Button(root, text="Start", width=7, command=thread, style='Accent.TButton')
+  button1 = ttk.Button(root, text="Stop", width=6, command=close_window, style='Accent.TButton')
+  button2 = ttk.Button(root, text="Save Image", width=12, command=save_image, style='Accent.TButton')
+  button3 = ttk.Button(root, text="Exit", width=6, command=root_quit, style='Accent.TButton')
+  button4 = ttk.Button(root, text="Calculate and save", width=18, command=calculate_and_save, style='Accent.TButton')
   #Dodavanje uputa za korisnika.
-  l = Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit")
-  l1 = Label(root, text = "Kako bi program radio najbolje, preporučuje se da se nalazite na udaljenosti od kamere od 1.5 do 2 metra\nTakođer, preporučuje se da se nalazite u dobro osvijetljenoj prostoriji\nZa najbolje rezultate, preporučuje se da se nalazite ispred kamere, a ne sa strane")
+  l = ttk.Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit",style='Accent.TButton')
+  l1 = ttk.Label(root, text = "Kako bi program radio najbolje, preporučuje se da se nalazite na udaljenosti od kamere od 1.5 do 2 metra\nTakođer, preporučuje se da se nalazite u dobro osvijetljenoj prostoriji\nZa najbolje rezultate, preporučuje se da se nalazite ispred kamere, a ne sa strane",style='Accent.TButton')
 
 
   #Dodavanje tekstovnih elemenata na glavni prozor.
@@ -381,13 +387,19 @@ def tktinker_test():
   button2.pack(anchor=W, pady=5)
   button3.pack(anchor=W, pady=5)
   button4.pack(anchor=W, pady=5)
-
   #Pokretanje glavne petlje prozora.
   root.mainloop()
 
 #
 #Funkcije za rukovanje gumbima u Tkinter sučelju.
 #
+
+def root_quit():
+  print("exit")
+  global break_var
+  break_var = 0
+  root.quit()
+  #Funkcija za izlaz iz programa. Poziva se kada korisnik pritisne gumb "Exit" u Tkinter sučelju.
 
 def thread():
   t = threading.Thread(target=start_window)
@@ -421,7 +433,6 @@ def calculate_and_save():
   racunanje_var = 1
   #Postavljanje varijable racunanje_var na 1 kako bi se izračunali kutovi u funkciji playground.
 
-
 def playground():
   #code for testing new stuff
   global break_var
@@ -433,9 +444,9 @@ def playground():
   global root
   #Dodavanje globalnih varijabli koje se koriste unutar funkcije.
 
-  T = Label(root, height=6, width=50, text=f"Kut: {postotak:.2f} degrees")
+  T = ttk.Label(root, style='Accent.TButton', width=50, text=f"Kut: {postotak:.2f} degrees")
   T.pack()
-  T1 = Label(root, height=6, width=50, text=f"Kut Koljena: {postotak2:.2f}%")
+  T1 = ttk.Label(root, style='Accent.TButton', width=50, text=f"Kut Koljena: {postotak2:.2f}%")
   T1.pack()
   #Dodavanje tekstovnih elemenata na glavni prozor za prikaz izračunatih kutova.
 
@@ -479,11 +490,9 @@ def playground():
     if racunanje_var == 1:
       kut1 = detect.calculate_angle("shoulders", "hips")
       kut2 = detect.calculate_angle("hips", "knees")
+      detect.odstupanja(kut1, 5)
+      detect.odstupanja(kut2, 5)
       #Definiranje varijabli kut1 i kut2 koje se izračunavaju pomoću funkcije calculate_angle iz Landmark modula. Kut1 predstavlja kut između ramena i kukova, a kut2 predstavlja kut između kukova i koljena.
-
-      print(kut2)
-      print(kut1)
-      #Ispisivanje izračunatih kutova na konzolu.
 
       postotak = kut1
       postotak2 = kut2
@@ -495,7 +504,6 @@ def playground():
       T.config(text=f"Kut: {postotak:.2f} degrees")
       T1.config(text=f"Kut Koljena: {postotak2:.2f} degrees")
       #Ažuriranje tekstovnih elemenata u Tkinter sučelju s izračunatim kutovima.
-      
   T.destroy()
   T1.destroy()
   #Nakon izlaska iz petlje, uništavamo tekstovne elemente u Tkinter sučelju.

@@ -25,7 +25,9 @@ class Detector:
         base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.ObjectDetectorOptions(base_options=base_options,
                                                 score_threshold=0.5,
-                                                category_allowlist=["person"])
+                                                category_allowlist=["person"]
+                                                )###JAKO VAŽNO - DETEKTIRAMO SAMO OSOBE, ŠTO ZNAČAJNO POVEĆAVA PERFORMANSE I PRECIZNOST DETEKCIJE.
+                                                                              ###Ovo je ključno jer nam omogućava da se fokusiramo samo na detekciju osoba, što je relevantno za naš projekt, a istovremeno smanjuje broj lažnih detekcija i povećava brzinu obrade.
         self.detector = vision.ObjectDetector.create_from_options(options)
         
     def detect(self, image): #Samo osobe detektiramo
