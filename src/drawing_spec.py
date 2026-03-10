@@ -1,15 +1,5 @@
 import dataclasses
-import math
-from typing import List, Mapping, Optional, Tuple, Union
-
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
-
-from mediapipe.framework.formats import detection_pb2
-from mediapipe.framework.formats import landmark_pb2
-from mediapipe.framework.formats import location_data_pb2
-
+from typing import Tuple
 _PRESENCE_THRESHOLD = 0.5
 _VISIBILITY_THRESHOLD = 0.5
 _BGR_CHANNELS = 3

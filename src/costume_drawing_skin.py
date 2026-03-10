@@ -10,7 +10,6 @@ _RADIUS = 5
 _RED = (48, 48, 255)
 _GREEN = (48, 255, 48)
 _BLUE = (192, 101, 21)
-_RED = (0, 204, 255)
 _GRAY = (128, 128, 128)
 _PURPLE = (128, 64, 128)
 _PEACH = (180, 229, 255)
@@ -144,14 +143,14 @@ def get_default_pose_landmarks_style() -> Mapping[int, DrawingSpec]:
     """
     pose_landmark_style = {}
     left_spec = DrawingSpec(
-        color=_RED, thickness=_THICKNESS_POSE_LANDMARKS)
+        color=_GRAY, thickness=_THICKNESS_POSE_LANDMARKS)
     right_spec = DrawingSpec(
-        color=_GREEN, thickness=_THICKNESS_POSE_LANDMARKS)
+        color=_GRAY, thickness=_THICKNESS_POSE_LANDMARKS)
     for landmark in _POSE_LANDMARKS_LEFT:
         pose_landmark_style[landmark] = left_spec
     for landmark in _POSE_LANDMARKS_RIGHT:
         pose_landmark_style[landmark] = right_spec
     pose_landmark_style[PoseLandmark.NOSE] = DrawingSpec(
-        color=_RED, thickness=_THICKNESS_POSE_LANDMARKS)
+        color=_GRAY, thickness=_THICKNESS_POSE_LANDMARKS)
     return pose_landmark_style
 

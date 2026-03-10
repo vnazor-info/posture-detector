@@ -117,7 +117,9 @@ class Detective:
         self.right_heel = 30
         self.left_foot_index = 31
         self.right_foot_index = 32
-        self.threshold = 5.0
+        self.shoulder_threshold = 5.0
+        self.knee_threshold =8.0
+        
         #Ovdje se definiraju indeksi za različite landmarke tijela, što omogućava lakši pristup tim landmarkima u funkcijama koje rade s njima. Na primjer, self.left_shoulder se koristi za pristup lijevom ramenu, self.right_knee za pristup desnom koljenu, itd. Ovi indeksi su standardni za MediaPipe Pose Landmarker model i omogućavaju nam da lako dohvatimo koordinate specifičnih dijelova tijela kada su detektirani na slici. Također, postavljen je prag (threshold) koji se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.
 
         #Inicijalizacija klase Detective koja postavlja indekse za različite landmarke tijela. Ovi indeksi se koriste za pristup specifičnim landmarkima u listi landmarka koju vraća detektor.
@@ -169,7 +171,8 @@ class Detective:
             self.pose_landmarks_list,
             solutions.pose.POSE_CONNECTIONS,
             costume_drawing_skin.get_default_pose_landmarks_style(),
-            drawing_spec.DrawingGreen())
+            drawing_spec.DrawingRed()
+            )
             #OVO ISCRTAVA LANDMARKE NA SLIKU
 
         image = annotated_image 
@@ -230,4 +233,48 @@ class Detective:
             print("Odstupanje detektirano! Kut: ", angle)
         else:
             print("Držanje je u redu. Kut: ", angle)
-        #Funkcija za provjeru odstupanja kuta od određenog praga (threshold). Prima izračunati kut (angle) i prag (threshold), i vraća True ako je kut veći od praga, inače vraća False. Ova funkcija se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.
+        #Funkcija za provjeru odstupanja kuta od određenog praga (threshold). Prima izračunati kut (angle) i prag (threshold), i vraća True ako je kut veći od praga, inače vraća False. Ova funkcija se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od praga, ispisuje poruku o detekciji odstupanja, inače ispisuje poruku da je držanje u redu.
+
+    def drawing_landmarks(self, image):
+        annotated_image = image.numpy_view().copy()
+        #Ovo pretvara sliku u numpy array da bi se mogla iscrtavati, a zatim koristi MediaPipe drawing utilities za iscrtavanje landmarka na slici. Nakon iscrtavanja, vraća sliku s iscrtanim landmarkima. Ova funkcija je slična draw_landmarks, ali se koristi za iscrtavanje landmarka na slici. Prima sliku, pretvara je u numpy array, iscrtava landmarke koristeći MediaPipe drawing utilities, i vraća sliku s iscrtanim landmarkima.
+        
+        solutions.drawing_utils.draw_landmarks(
+            annotated_image,
+            self.pose_landmarks_list,
+            solutions.pose.POSE_CONNECTIONS,
+            costume_drawing_skin.get_default_pose_landmarks_style(),
+            drawing_spec.DrawingGreen()
+            )
+        #Ovdje se koristi drugačiji stil iscrtavanja (DrawingGreen) kako bi se razlikovalo od funkcije draw_landmarks. Ova funkcija se koristi za iscrtavanje landmarka na slici, ali također uključuje logiku za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od određenog praga, određeni dijelovi tijela (ramena i koljena) će biti označeni kao loše držanje.
+        #Crta zelenu boju za sve landmarke, ali ako se detektira loše držanje, određeni dijelovi tijela će biti označeni crvenom bojom (DrawingRed) u funkciji draw_landmarks. Ova funkcija se koristi za iscrtavanje landmarka na slici, ali također uključuje logiku za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od određenog praga, određeni dijelovi tijela (ramena i koljena) će biti označeni kao loše držanje.
+
+        #Ovdje se koristi funkcija calculate_angle za izračunavanje kuta između linija definiranih landmarkima (ramena i kukovi, koljena i kukovi). Ako je kut veći od određenog praga, određeni dijelovi tijela će biti označeni kao loše držanje. Na kraju, funkcija vraća sliku s iscrtanim landmarkima i označenim dijelovima tijela koji imaju loše držanje.
+        if Detective.__calculate_angle_2d(self, self.get_line("shoulders"), self.get_line("hips")) > self.shoulder_threshold:
+            self.incorecrt_posture_shoulders = ([(11, 12)])
+        else:
+            self.incorecrt_posture_shoulders = ([(0, 0)])
+            #Ako funkcija calculate_angle vrati kut veci od praga za ramena, onda se ti landmarki (11 i 12) oznace kao loše držanje, inace se oznace kao normalno (0, 0) sto znaci da se nece iscrtavati crvenom bojom.
+            
+        if Detective.__calculate_angle_2d(self, self.get_line("knees"), self.get_line("hips")) > self.knee_threshold:
+            self.incorecrt_posture_knees = ([(23, 25), (24, 26)])
+        else:
+            self.incorecrt_posture_knees = ([(0, 0)])
+            #Ako funkcija calculate_angle vrati kut veci od praga za koljena, onda se ti landmarki (23, 25 i 24, 26) oznace kao loše držanje, inace se oznace kao normalno (0, 0) sto znaci da se nece iscrtavati crvenom bojom.
+
+        self.incorecrt_posture = self.incorecrt_posture_shoulders + self.incorecrt_posture_knees
+        #Zbrajanje dvaju 'tupleova' koji sadrze indekse landmarka koji su oznaceni kao loše držanje, kako bi se dobila jedna lista svih landmarka koji su oznaceni kao loše držanje. Ova lista se koristi u funkciji draw_landmarks za iscrtavanje tih landmarka crvenom bojom (DrawingRed) kako bi se vizualno istaknuli dijelovi tijela koji imaju loše držanje.
+
+        solutions.drawing_utils.draw_landmarks(
+            annotated_image,
+            self.pose_landmarks_list,
+            self.incorecrt_posture,
+            costume_drawing_skin.get_default_pose_landmarks_style(),
+            drawing_spec.DrawingRed()
+            )
+        #Ovdje se koristi funkcija draw_landmarks za iscrtavanje landmarka koji su označeni kao loše držanje (self.incorecrt_posture) crvenom bojom (DrawingRed) na slici. Ova funkcija se koristi za iscrtavanje landmarka na slici, ali također uključuje logiku za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od određenog praga, određeni dijelovi tijela (ramena i koljena) će biti označeni kao loše držanje.
+
+
+        image = annotated_image 
+        return image
+        #Funkcija vraća sliku s iscrtanim landmarkima i označenim dijelovima tijela koji imaju loše držanje. Ova funkcija se koristi za iscrtavanje landmarka na slici, ali također uključuje logiku za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od određenog praga, određeni dijelovi tijela (ramena i koljena) će biti označeni kao loše držanje.

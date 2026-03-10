@@ -347,7 +347,7 @@ racunanje_var = 0
 postotak = 0.0
 postotak2 = 0.0
 kut = 0.0
-
+switch_state = False
 
 #Dodavanje globalnih varijabli koje se koriste za kontrolu toka programa i spremanje rezultata izračuna.
 
@@ -372,6 +372,7 @@ def tktinker_test():
   button2 = ttk.Button(root, text="Save Image", width=12, command=save_image, style='Accent.TButton')
   button3 = ttk.Button(root, text="Exit", width=6, command=root_quit, style='Accent.TButton')
   button4 = ttk.Button(root, text="Calculate and save", width=18, command=calculate_and_save, style='Accent.TButton')
+  toggle_button = ttk.Checkbutton(root, text='Toggle button', style='Toggle.TButton', command=toggle_button_state)
   #Dodavanje uputa za korisnika.
   l = ttk.Label(root, text = "Program pokrecete pritiskom na Start\nZaustavljate pritiskom na Stop\nSpremate sliku pritiskom na Save Image\nIzlaz iz programa pritiskom na Exit",style='Accent.TButton')
   l1 = ttk.Label(root, text = "Kako bi program radio najbolje, preporučuje se da se nalazite na udaljenosti od kamere od 1.5 do 2 metra\nTakođer, preporučuje se da se nalazite u dobro osvijetljenoj prostoriji\nZa najbolje rezultate, preporučuje se da se nalazite ispred kamere, a ne sa strane",style='Accent.TButton')
@@ -387,6 +388,7 @@ def tktinker_test():
   button2.pack(anchor=W, pady=5)
   button3.pack(anchor=W, pady=5)
   button4.pack(anchor=W, pady=5)
+  toggle_button.pack(anchor=W, pady=5)
   #Pokretanje glavne petlje prozora.
   root.mainloop()
 
@@ -433,6 +435,12 @@ def calculate_and_save():
   racunanje_var = 1
   #Postavljanje varijable racunanje_var na 1 kako bi se izračunali kutovi u funkciji playground.
 
+def toggle_button_state():
+  global switch_state
+  switch_state = True
+  print("toggle button")
+  #Ova funkcija se poziva kada korisnik klikne na toggle gumb. Trenutno samo ispisuje poruku na konzolu, ali se može proširiti da mijenja stanje nekih funkcionalnosti u programu.
+
 def playground():
   #code for testing new stuff
   global break_var
@@ -453,7 +461,6 @@ def playground():
   lap_cam = Camera.Camera()
   detect = Landmark.Detective()
   #Dodavanje varijabli lap_cam i detect radi lakse inplementacije kamere iz Camera modula i detektora iz Landmark modula u funkciju.
-
   #Ulazimo u glavnu petlju koja će se vrtjeti dok god je varijabla break_var postavljena na 1.
   while True:
     
@@ -467,7 +474,7 @@ def playground():
     #Pretvaranje slike u format koji Mediapipe može koristiti.
   
     if detect.person_detected(whole_img):
-      landmark_img = detect.draw_landmarks(whole_img)
+      landmark_img = detect.drawing_landmarks(whole_img)
       #Provjera je li osoba detektirana na slici. Ako jest, crtaju se landmarki na slici.
     
     lap_cam.present_img(landmark_img)
@@ -488,6 +495,7 @@ def playground():
       #Ako je varijabla save_var postavljena na 1, spremamo trenutnu sliku s landmarkima kao "landmark_image.jpg" i resetiramo varijablu save_var na 0.
 
     if racunanje_var == 1:
+      sleep(3)
       kut1 = detect.calculate_angle("shoulders", "hips")
       kut2 = detect.calculate_angle("hips", "knees")
       detect.odstupanja(kut1, 5)
