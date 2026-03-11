@@ -19,8 +19,10 @@ from . import Landmark
 import tkinter.ttk as ttk
 import ttkthemes
 from tkinter import *
+from tkinter import _default_root
 import threading
 from itertools import chain
+from . import GUI
 
 #Ovdje smo inportali potrebne biblioteke i module.
 #Neke trenutno nisu u upotrebi, ali se koriste u drugim dijelovima projekta.
@@ -515,3 +517,37 @@ def playground():
   T.destroy()
   T1.destroy()
   #Nakon izlaska iz petlje, uništavamo tekstovne elemente u Tkinter sučelju.
+
+def GUI_test():
+  gui = GUI.GUI()
+  gui.setup()
+  #Ova funkcija se koristi za testiranje Tkinter sučelja. Stvara instancu klase GUI i poziva metodu setup koja postavlja sučelje i pokreće glavnu petlju. Ova funkcija nam je pomogla da testiramo funkcionalnost našeg Tkinter sučelja prije nego što smo ga integrirali u naš glavni program.
+
+
+from time import sleep
+
+def test(gui):
+    print("test")
+
+    lap_cam = Camera.Camera()
+    detect = Landmark.Detective()
+
+    while True:
+
+        if not gui.start_var or gui.app_quit_var:
+            sleep(0.1)
+            cv2.destroyAllWindows()
+            continue
+
+        print("looping")
+
+        still_image = lap_cam.capture_image()
+
+        whole_img = mp.Image(
+            image_format=mp.ImageFormat.SRGB,
+            data=still_image
+        )
+
+        detect.person_detected(whole_img)
+        landmark_img = detect.drawing_landmarks(whole_img)
+        lap_cam.present_img(landmark_img)

@@ -15,8 +15,10 @@ import cv2
 #lib.stickfigure_videotest()
 #lib.camera_test()
 #lib.camera_class_test()
-lib.tktinker_test()
+#lib.tktinker_test()
 #lib.playground()
+#lib.test()
+lib.GUI_test()
 
 #
 #U main.py datoteci pokrećemo različite testove i demonstracije koje smo implementirali u lib modulu.
