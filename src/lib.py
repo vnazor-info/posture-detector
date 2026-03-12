@@ -537,8 +537,6 @@ def test(gui):
                 print("image cannot be saved because the program is not running")
                 gui.save_image_var = False
             continue
-          
-        print("looping")
 
         still_image = lap_cam.capture_image()
 
@@ -576,19 +574,18 @@ def test(gui):
 
         if gui.save_image_var:
             cv2.imwrite("landmark_image.jpg", landmark_img)
-            print("image saved")
             gui.save_image_var = False
             continue
 
-        if gui.calculate_and_save_var:
+        if gui.calculate_var:
             kut1 = detect.calculate_angle("shoulders", "hips")
             kut2 = detect.calculate_angle("hips", "knees")
-            detect.odstupanja(kut1, 5)
-            detect.odstupanja(kut2, 5)
 
             postotak = kut1
             postotak2 = kut2
 
-            gui.calculate_and_save_var = False
+            gui.shoulder_angle.configure(text=f"Shoulder angle: {postotak:.2f} degrees")
+            gui.knee_angle.configure(text=f"Knee angle: {postotak2:.2f} degrees")
+            gui.calculate_var = False
             continue
         
