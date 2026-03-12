@@ -162,7 +162,7 @@ class Detective:
         return self.pose_landmarks
         #Funkcija za dobivanje landmarka. Vraća self.pose_landmarks, koji sadrži informacije o položaju različitih dijelova tijela detektirane osobe.
 
-    def draw_landmarks(self, image):
+    def drawing_all_landmarks(self, image):
         annotated_image = image.numpy_view().copy()
         #OVO PRETVARA SLIKU U NUMPY ARRAY DA BI SE MOGLA ISCRTAVATI
         
@@ -171,7 +171,7 @@ class Detective:
             self.pose_landmarks_list,
             solutions.pose.POSE_CONNECTIONS,
             costume_drawing_skin.get_default_pose_landmarks_style(),
-            drawing_spec.DrawingRed()
+            drawing_spec.DrawingNeutral()
             )
             #OVO ISCRTAVA LANDMARKE NA SLIKU
 
@@ -235,7 +235,7 @@ class Detective:
             print("Držanje je u redu. Kut: ", angle)
         #Funkcija za provjeru odstupanja kuta od određenog praga (threshold). Prima izračunati kut (angle) i prag (threshold), i vraća True ako je kut veći od praga, inače vraća False. Ova funkcija se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima. Ako je kut veći od praga, ispisuje poruku o detekciji odstupanja, inače ispisuje poruku da je držanje u redu.
 
-    def drawing_landmarks(self, image):
+    def drawing_landmarks_corectly(self, image):
         annotated_image = image.numpy_view().copy()
         #Ovo pretvara sliku u numpy array da bi se mogla iscrtavati, a zatim koristi MediaPipe drawing utilities za iscrtavanje landmarka na slici. Nakon iscrtavanja, vraća sliku s iscrtanim landmarkima. Ova funkcija je slična draw_landmarks, ali se koristi za iscrtavanje landmarka na slici. Prima sliku, pretvara je u numpy array, iscrtava landmarke koristeći MediaPipe drawing utilities, i vraća sliku s iscrtanim landmarkima.
         

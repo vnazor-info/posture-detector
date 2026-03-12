@@ -12,14 +12,14 @@ from mediapipe.framework.formats import landmark_pb2
 from mediapipe import solutions
 import math
 from time import sleep
-from PIL import Image
+from PIL import Image, ImageTk
 from . import Camera
 from . import Detector
 from . import Landmark
-import tkinter.ttk as ttk
+import tkinter as tk
+from tkinter import ttk
 import ttkthemes
-from tkinter import *
-from tkinter import _default_root
+# _default_root can be accessed via tk._default_root if needed
 import threading
 from itertools import chain
 from . import GUI
@@ -353,10 +353,10 @@ switch_state = False
 
 #Dodavanje globalnih varijabli koje se koriste za kontrolu toka programa i spremanje rezultata izračuna.
 
-root = Tk()
-# Create a style
-root.call("source", "/home/infokab/Projects/posture-detector/resources/Azure-ttk-theme/azure.tcl")
-root.call("set_theme", "dark")
+#root = tk.Tk()
+#Create a style
+#root.call("source", "/home/infokab/Projects/posture-detector/resources/Azure-ttk-theme/azure.tcl")
+#root.call("set_theme", "dark")
 def tktinker_test():
 
   global postotak
@@ -385,12 +385,12 @@ def tktinker_test():
   l1.pack()
 
   #Dodavanje gumba na glavni prozor.
-  button.pack(anchor=W, pady=5)
-  button1.pack(anchor=W, pady=5)
-  button2.pack(anchor=W, pady=5)
-  button3.pack(anchor=W, pady=5)
-  button4.pack(anchor=W, pady=5)
-  toggle_button.pack(anchor=W, pady=5)
+  button.pack(anchor=tk.W, pady=5)
+  button1.pack(anchor=tk.W, pady=5)
+  button2.pack(anchor=tk.W, pady=5)
+  button3.pack(anchor=tk.W, pady=5)     
+  button4.pack(anchor=tk.W, pady=5)
+  toggle_button.pack(anchor=tk.W, pady=5)
   #Pokretanje glavne petlje prozora.
   root.mainloop()
 
@@ -520,11 +520,8 @@ def playground():
 
 def GUI_test():
   gui = GUI.GUI()
-  gui.setup()
+  gui.GUI_start()
   #Ova funkcija se koristi za testiranje Tkinter sučelja. Stvara instancu klase GUI i poziva metodu setup koja postavlja sučelje i pokreće glavnu petlju. Ova funkcija nam je pomogla da testiramo funkcionalnost našeg Tkinter sučelja prije nego što smo ga integrirali u naš glavni program.
-
-
-from time import sleep
 
 def test(gui):
     print("test")
@@ -533,12 +530,14 @@ def test(gui):
     detect = Landmark.Detective()
 
     while True:
-
-        if not gui.start_var or gui.app_quit_var:
+        if not gui.start_var or gui.app_quit_var: 
             sleep(0.1)
-            cv2.destroyAllWindows()
+            gui.image_output.configure(image="")
+            if gui.save_image_var:
+                print("image cannot be saved because the program is not running")
+                gui.save_image_var = False
             continue
-
+          
         print("looping")
 
         still_image = lap_cam.capture_image()
@@ -549,5 +548,47 @@ def test(gui):
         )
 
         detect.person_detected(whole_img)
-        landmark_img = detect.drawing_landmarks(whole_img)
-        lap_cam.present_img(landmark_img)
+
+        if not gui.draw_var:
+          landmark_img = detect.drawing_all_landmarks(whole_img)
+          #lap_cam.present_img(landmark_img)
+
+          b,g,r = cv2.split(landmark_img)
+          img = cv2.merge((r,g,b))
+
+          im = Image.fromarray(img)
+          imgtk = ImageTk.PhotoImage(image=im) 
+
+          gui.image_output.configure(image=imgtk)
+          gui.image_output.image = imgtk
+      
+        elif gui.draw_var:
+          landmark_img = detect.drawing_landmarks_corectly(whole_img)
+
+          b,g,r = cv2.split(landmark_img)
+          img = cv2.merge((r,g,b))
+
+          im = Image.fromarray(img)
+          imgtk = ImageTk.PhotoImage(image=im) 
+
+          gui.image_output.configure(image=imgtk)
+          gui.image_output.image = imgtk 
+
+        if gui.save_image_var:
+            cv2.imwrite("landmark_image.jpg", landmark_img)
+            print("image saved")
+            gui.save_image_var = False
+            continue
+
+        if gui.calculate_and_save_var:
+            kut1 = detect.calculate_angle("shoulders", "hips")
+            kut2 = detect.calculate_angle("hips", "knees")
+            detect.odstupanja(kut1, 5)
+            detect.odstupanja(kut2, 5)
+
+            postotak = kut1
+            postotak2 = kut2
+
+            gui.calculate_and_save_var = False
+            continue
+        

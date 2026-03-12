@@ -25,3 +25,10 @@ class DrawingGreen:
     thickness: int = 2
     # Circle radius. Default to 2 pixels.
     circle_radius: int = 2
+
+class DrawingNeutral:
+    color: Tuple[int, int, int] = BLACK_COLOR
+    # Thickness for drawing the annotation. Default to 2 pixels.
+    thickness: int = 2
+    # Circle radius. Default to 2 pixels.
+    circle_radius: int = 2
