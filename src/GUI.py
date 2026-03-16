@@ -60,6 +60,16 @@ class GUI:
         self.knee_angle = ttk.Label(self.root, text="Knee angle: ", style='TLabel', wraplength=300, justify="center")
         self.knee_angle.place(relx=0.5, rely=0.15, anchor="center")
 
+        self.widgets_frame = ttk.Frame(self.root, padding=(0, 0, 0, 10))
+        self.widgets_frame.grid(
+            row=6, column=0, pady=5, padx=5, sticky="w"
+        )
+
+        self.entry = ttk.Entry(self.widgets_frame)
+        self.entry.insert(0, "Enter camera port")
+        self.entry.grid(row=0, column=0, padx=5, pady=(0, 10), sticky="ew")
+
+
     def start_var_change_positive(self):
         self.start_var = True
         return self.start_var

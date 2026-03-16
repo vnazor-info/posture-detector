@@ -526,18 +526,24 @@ def GUI_test():
 def test(gui):
     print("test")
 
+    global cam_index_input
+    cam_index_input = gui.entry.get()
+    
+
     lap_cam = Camera.Camera()
     detect = Landmark.Detective()
-
     while True:
+
         if not gui.start_var or gui.app_quit_var: 
             sleep(0.1)
             gui.image_output.configure(image="")
+            cam_index_input = gui.entry.get()
+            lap_cam()
             if gui.save_image_var:
                 print("image cannot be saved because the program is not running")
                 gui.save_image_var = False
             continue
-
+        
         still_image = lap_cam.capture_image()
 
         whole_img = mp.Image(

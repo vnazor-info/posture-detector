@@ -1,6 +1,7 @@
 from time import sleep
 from PIL import Image
 import cv2 as cv2
+from src import lib
 #Ovdje smo importali potrebne biblioteke: time za upravljanje vremenom, PIL za rad s slikama i cv2 za rad s kamerom i video zapisima.
 
 #
@@ -18,9 +19,11 @@ class Camera:
 
         self.win_name = "Test suite"
         #Imenovanje prozora za prikaz kamere.
-
-        self.cam = cv2.VideoCapture(0)
-        #Inicijalizacija kamere pomoću OpenCV-a. Broj 2 označava indeks kamere (može varirati ovisno o sustavu).
+        self.cam_index = int(lib.cam_index_input)
+        #Indeks kamere koji se koristi za inicijalizaciju. Obično 0
+        self.cam = cv2.VideoCapture(self.cam_index)
+        print(self.cam_index)
+        #Inicijalizacija kamere pomoću OpenCV-a.
 
         self.frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
