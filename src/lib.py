@@ -518,7 +518,7 @@ def playground():
   T1.destroy()
   #Nakon izlaska iz petlje, uništavamo tekstovne elemente u Tkinter sučelju.
 
-def GUI_test():
+def GUI_run():
   gui = GUI.GUI()
   gui.GUI_start()
   #Ova funkcija se koristi za testiranje Tkinter sučelja. Stvara instancu klase GUI i poziva metodu setup koja postavlja sučelje i pokreće glavnu petlju. Ova funkcija nam je pomogla da testiramo funkcionalnost našeg Tkinter sučelja prije nego što smo ga integrirali u naš glavni program.
@@ -527,7 +527,7 @@ def test(gui):
     print("test")
 
     global cam_index_input
-    cam_index_input = gui.entry.get()
+    cam_index_input = gui.cam_index_input
     
 
     lap_cam = Camera.Camera()
@@ -537,7 +537,7 @@ def test(gui):
         if not gui.start_var or gui.app_quit_var: 
             sleep(0.1)
             gui.image_output.configure(image="")
-            cam_index_input = gui.entry.get()
+            cam_index_input = gui.cam_index_input
             lap_cam()
             if gui.save_image_var:
                 print("image cannot be saved because the program is not running")

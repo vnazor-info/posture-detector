@@ -2,6 +2,7 @@ from time import sleep
 from PIL import Image
 import cv2 as cv2
 from src import lib
+import cv2
 #Ovdje smo importali potrebne biblioteke: time za upravljanje vremenom, PIL za rad s slikama i cv2 za rad s kamerom i video zapisima.
 
 #
@@ -10,7 +11,7 @@ from src import lib
 class Camera:
     def __init__(self):
         print("Hello Camera!")
-        
+
         #self.picam = Picamera2()
         #self.config = self.picam.create_preview_configuration()
         #self.picam.configure(self.config)

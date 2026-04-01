@@ -8,6 +8,8 @@ from mediapipe.framework.formats import landmark_pb2
 import math
 from src import costume_drawing_skin
 from src import drawing_spec
+from src.config import get_resource_path
+
 #Ovdje se uvoze potrebne biblioteke, uključujući MediaPipe za obradu slike i računalni vid, OpenCV za rad s kamerom i slike, te math za matematičke operacije.
 
 
@@ -123,7 +125,7 @@ class Detective:
         #Ovdje se definiraju indeksi za različite landmarke tijela, što omogućava lakši pristup tim landmarkima u funkcijama koje rade s njima. Na primjer, self.left_shoulder se koristi za pristup lijevom ramenu, self.right_knee za pristup desnom koljenu, itd. Ovi indeksi su standardni za MediaPipe Pose Landmarker model i omogućavaju nam da lako dohvatimo koordinate specifičnih dijelova tijela kada su detektirani na slici. Također, postavljen je prag (threshold) koji se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.
 
         #Inicijalizacija klase Detective koja postavlja indekse za različite landmarke tijela. Ovi indeksi se koriste za pristup specifičnim landmarkima u listi landmarka koju vraća detektor.
-        self.base_options = python.BaseOptions(model_asset_path='resources/pose_landmarker_heavy.task')
+        self.base_options = python.BaseOptions(model_asset_path=get_resource_path('resources/pose_landmarker_heavy.task'))
         self.options = vision.PoseLandmarkerOptions(
             base_options=self.base_options,
             output_segmentation_masks=True)

@@ -18,7 +18,7 @@ import cv2
 #lib.tktinker_test()
 #lib.playground()
 #lib.test()
-lib.GUI_test()
+lib.GUI_run()
 
 #
 #U main.py datoteci pokrećemo različite testove i demonstracije koje smo implementirali u lib modulu.

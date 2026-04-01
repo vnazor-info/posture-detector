@@ -7,6 +7,7 @@ import threading
 from time import sleep
 import os
 import cv2
+from src.config import get_resource_path
 
 class GUI:
     def __init__(self):
@@ -14,7 +15,25 @@ class GUI:
         self.save_image_var = False
         self.calculate_var = False
         self.draw_var = False
-        self.app_quit_var = False        
+        self.app_quit_var = False 
+        print(f"OpenCV version: {cv2.__version__}")
+
+        max_cameras = 10
+        
+        self.avaiable = []
+        for i in range(max_cameras):
+            cap = cv2.VideoCapture(i)
+            
+            if not cap.read()[0]:
+                print(f"Camera index {i:02d} not found...")
+                continue
+            
+            self.avaiable.append(i)
+            cap.release()
+            
+            print(f"Camera index {i:02d} OK!")
+
+        print(f"Cameras found: {self.avaiable}")       
 
     def gui_setup(self):
         
@@ -65,10 +84,16 @@ class GUI:
             row=6, column=0, pady=5, padx=5, sticky="w"
         )
 
-        self.entry = ttk.Entry(self.widgets_frame)
-        self.entry.insert(0, "Enter camera port")
-        self.entry.grid(row=0, column=0, padx=5, pady=(0, 10), sticky="ew")
+        # Menu for the Menubutton
+        self.menu = tk.Menu(self.root)
+        # Menubutton
+        self.menubutton = ttk.Menubutton(
+            self.widgets_frame, text="Cameras", menu=self.menu, direction="below"
+        )
+        self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
 
+        for i in range(len(self.avaiable)):
+            self.menu.add_command(label=f"Camera {i+1}", command=lambda index=self.avaiable[i]: self.select_camera(index))
 
     def start_var_change_positive(self):
         self.start_var = True
@@ -103,12 +128,17 @@ class GUI:
         thread = threading.Thread(target=target)
         thread.start()
 
+    def select_camera(self, index):
+        print(f"Selected camera index: {index}")
+        self.cam_index_input = index
+        return self.cam_index_input
+
     def GUI_start(self):
         self.root = tk.Tk()
         self.root.title("")
 
         # Simply set the theme
-        self.root.call("source", "/home/infokab/Projects/posture-detector/resources/Azure-ttk-theme/azure.tcl")
+        self.root.call("source", get_resource_path("resources/Azure-ttk-theme/azure.tcl"))
         self.root.call("set_theme", "dark")
         self.gui_setup()
         self.root.mainloop()
