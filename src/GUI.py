@@ -16,24 +16,9 @@ class GUI:
         self.calculate_var = False
         self.draw_var = False
         self.app_quit_var = False 
-        print(f"OpenCV version: {cv2.__version__}")
-
-        max_cameras = 10
-        
         self.avaiable = []
-        for i in range(max_cameras):
-            cap = cv2.VideoCapture(i)
-            
-            if not cap.read()[0]:
-                print(f"Camera index {i:02d} not found...")
-                continue
-            
-            self.avaiable.append(i)
-            cap.release()
-            
-            print(f"Camera index {i:02d} OK!")
-
-        print(f"Cameras found: {self.avaiable}")       
+        self.max_cameras = 10    
+        self.camera_checker()   
 
     def gui_setup(self):
         
@@ -93,7 +78,7 @@ class GUI:
         self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
 
         for i in range(len(self.avaiable)):
-            self.menu.add_command(label=f"Camera {i+1}", command=lambda index=self.avaiable[i]: self.select_camera(index))
+            self.menu.add_command(label=f"    Camera {i+1}    ", command=lambda index=self.avaiable[i]: self.select_camera(index))
 
     def start_var_change_positive(self):
         self.start_var = True
@@ -132,6 +117,23 @@ class GUI:
         print(f"Selected camera index: {index}")
         self.cam_index_input = index
         return self.cam_index_input
+
+    def camera_checker(self):
+        print(f"OpenCV version: {cv2.__version__}")
+        
+        for i in range(self.max_cameras):
+            cap = cv2.VideoCapture(i)
+            
+            if not cap.read()[0]:
+                print(f"Camera index {i:02d} not found...")
+                continue
+            
+            self.avaiable.append(i)
+            cap.release()
+            
+            print(f"Camera index {i:02d} OK!")
+
+        print(f"Cameras found: {self.avaiable}")
 
     def GUI_start(self):
         self.root = tk.Tk()
