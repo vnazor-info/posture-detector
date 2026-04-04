@@ -153,4 +153,5 @@ def get_default_pose_landmarks_style() -> Mapping[int, DrawingSpec]:
     pose_landmark_style[PoseLandmark.NOSE] = DrawingSpec(
         color=_GRAY, thickness=_THICKNESS_POSE_LANDMARKS)
     return pose_landmark_style
-
+    ##Sve boje ovdje su naznacene sa "GRAY" jer se radi o neutralnoj boji koja se koristi za crtanje svih točaka tijela. 
+    ##U ovom djelu programa uredeni su samo djelovi koji odabiru boje tocaka(oni su naglaseni komentarima), dok su ostali dijelovi koda ostavljeni neuredni jer nisu relevantni za funkcionalnost programa. Ovdje se definiraju različite boje i debljine linija koje se koriste za crtanje različitih dijelova tijela (ruke, lice, tijelo) u MediaPipe modelu. Također se definiraju stilovi crtanja za različite skupove točaka na rukama, licu i tijelu, što omogućava vizualno razlikovanje različitih dijelova tijela prilikom prikaza rezultata detekcije.

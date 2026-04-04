@@ -32,3 +32,5 @@ class DrawingNeutral:
     thickness: int = 2
     # Circle radius. Default to 2 pixels.
     circle_radius: int = 2
+
+##Ova datoteka je samo uredena na djelovima kojima se dodavala boja, dok su ostali dijelovi koda ostavljeni neuredni jer nisu relevantni za funkcionalnost programa. Ovdje se definiraju različite boje i debljine linija koje se koriste za crtanje različitih dijelova tijela (ruke, lice, tijelo) u MediaPipe modelu. Također se definiraju stilovi crtanja za različite skupove točaka na rukama, licu i tijelu, što omogućava vizualno razlikovanje različitih dijelova tijela prilikom prikaza rezultata detekcije.
