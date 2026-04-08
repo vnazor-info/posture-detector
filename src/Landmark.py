@@ -120,7 +120,7 @@ class Detective:
         self.left_foot_index = 31
         self.right_foot_index = 32
         self.shoulder_threshold = 5.0
-        self.knee_threshold =8.0
+        self.knee_threshold =5.0
         
         #Ovdje se definiraju indeksi za različite landmarke tijela, što omogućava lakši pristup tim landmarkima u funkcijama koje rade s njima. Na primjer, self.left_shoulder se koristi za pristup lijevom ramenu, self.right_knee za pristup desnom koljenu, itd. Ovi indeksi su standardni za MediaPipe Pose Landmarker model i omogućavaju nam da lako dohvatimo koordinate specifičnih dijelova tijela kada su detektirani na slici. Također, postavljen je prag (threshold) koji se koristi za detekciju lošeg držanja na temelju kuta između linija definiranih landmarkima.
 
