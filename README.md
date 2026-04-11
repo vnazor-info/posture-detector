@@ -2,7 +2,7 @@
 
 **Program za detekciju i analizu pravilnog držanja tijela u stvarnom vremenu**
 
-![Glavna slika / Logo](./images/main.png)
+![PoseDetectives logo](./PoseDetectives%20logo%20design%20concept.png)
 
 Program koristi **MediaPipe Pose** za prepoznavanje ključnih točaka na tijelu (ramena, kukovi, koljena itd.), računa kutove između dijelova tijela i daje procjenu koliko je držanje pravilno. Idealno za učenike, nastavnike i sve koji puno sjede za računalom.
 
@@ -17,8 +17,8 @@ Program koristi **MediaPipe Pose** za prepoznavanje ključnih točaka na tijelu 
 - Odabir bilo koje povezane kamere preko menija
 - Moderno Tkinter sučelje s temama
 
-![Screenshot sučelja](./images/screenshot1.png)
-![Primjer detekcije](./images/screenshot2.png)
+![Screenshot sučelja](./Screenshot%202026-04-07%20182942.png)
+![Ispis kutova](./Screenshot%202026-04-07%20183048.png)
 
 ## 🚀 Preuzimanje i pokretanje
 
