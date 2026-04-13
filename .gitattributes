@@ -1,2 +1,4 @@
 main filter=lfs diff=lfs merge=lfs -text
 dist/main filter=lfs diff=lfs merge=lfs -text
+dist/** filter=lfs diff=lfs merge=lfs -text
+build/** filter=lfs diff=lfs merge=lfs -text
