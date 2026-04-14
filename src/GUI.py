@@ -97,6 +97,10 @@ class GUI:
         for i in range(len(self.avaiable)):
             self.menu.add_command(label=f"    Camera {i+1}    ", command=lambda index=self.avaiable[i]: self.select_camera(index))
 
+        self.errorbox = ttk.Label(self.root, text="Error box", style='TLabel', wraplength=300, justify="center", foreground="red")
+        self.errorbox.place(relx=0.5, rely=0.2, anchor="center")
+        #Postavljanje error boxa koji koristi ttk.Label. Label je namijenjen za prikazivanje poruka o greškama i koristi se wraplength za ograničavanje širine teksta, justify za centriranje teksta i foreground za postavljanje boje teksta na crvenu. Label je postavljen na sredinu prozora koristeći place metodu s relx, rely i anchor parametrima.       
+
     def start_var_change_positive(self):
         self.start_var = True
         return self.start_var
@@ -145,7 +149,7 @@ class GUI:
 
     def camera_checker(self):
         print(f"OpenCV version: {cv2.__version__}")
-        
+
         for i in range(self.max_cameras):
             #ponavlja petlju od 0 do max_cameras (10) kako bi provjerila dostupnost kamera. Za svaki indeks kamere, pokušava se otvoriti kamera koristeći cv2.VideoCapture(i). Ako čitanje okvira s kamere nije uspješno, ispisuje se poruka da kamera nije pronađena i nastavlja se na sljedeći indeks. Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.  
             cap = cv2.VideoCapture(i)

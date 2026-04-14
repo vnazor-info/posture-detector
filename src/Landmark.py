@@ -157,6 +157,7 @@ class Detective:
         if not detect.pose_landmarks:
             self.pose_landmarks = None
             detected = False
+            self.pose_landmarks_list = None
         return detected
         #Sprijecava kod da se pokrene dalje ako nije detektirana osoba, postavljanjem self.pose_landmarks na None i vraćanjem False. Ako je osoba detektirana, vraća True.
 

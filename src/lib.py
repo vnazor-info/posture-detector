@@ -536,82 +536,82 @@ def test(gui):
     detect = Landmark.Detective()
     #Dodavanje varijable detect radi lakse inplementacije detektora iz Landmark modula u funkciju.
     
+    if gui.save_image_var:
+        print("image cannot be saved because the program is not running")
+        gui.save_image_var = False
+        gui.errorbox.configure(text="Error: Sliku nije moguće spremiti jer program nije pokrenut.")
+        #Ako korisnik pokuša spremiti sliku dok program nije pokrenut, ispisujemo poruku na konzolu i resetiramo varijablu save_image_var na False kako bi se spriječilo neželjeno ponašanje programa.
+
+
     while True:
-
-        if not gui.start_var or gui.app_quit_var: 
-            sleep(0.1)
-            gui.image_output.configure(image="")
-            cam_index_input = gui.cam_index_input
-            lap_cam()
-            #Ako varijabla start_var nije postavljena na True ili je varijabla app_quit_var postavljena na True, pauziramo petlju i resetiramo prikaz slike. Također, resetiramo kameru kako bi se osiguralo da se kamera isključuje kada se program zaustavi.
-            if gui.save_image_var:
-                print("image cannot be saved because the program is not running")
-                gui.save_image_var = False
-                #Ako korisnik pokuša spremiti sliku dok program nije pokrenut, ispisujemo poruku na konzolu i resetiramo varijablu save_image_var na False kako bi se spriječilo neželjeno ponašanje programa.
-            continue
-        
-        still_image = lap_cam.capture_image()
-        #Dobivanje slike s kamere.
-
-        whole_img = mp.Image(
-            image_format=mp.ImageFormat.SRGB,
-            data=still_image
-        )
-        #Pretvaranje slike u format koji Mediapipe može koristiti.
-
-        detect.person_detected(whole_img)
-        #Provjera je li osoba detektirana na slici. Ako jest, crtaju se landmarki na slici.
-
-        if not gui.draw_var:
-          landmark_img = detect.drawing_all_landmarks(whole_img)
-          #Ako varijabla draw_var nije postavljena na True, crtaju se svi landmarki na slici. Ako je varijabla draw_var postavljena na True, crtaju se samo osnovni landmarki (ramena, kukovi, koljena i laktovi).
-
-          b,g,r = cv2.split(landmark_img)
-          img = cv2.merge((r,g,b))
-          #OpenCV koristi BGR format boja, dok Tkinter koristi RGB format, pa je potrebno zamijeniti redoslijed kanala boja prije prikaza slike u Tkinter sučelju.
-
-          im = Image.fromarray(img)
-          imgtk = ImageTk.PhotoImage(image=im) 
-          #Pretvaranje slike iz NumPy formata u PIL format, a zatim u ImageTk format koji Tkinter može prikazati.
-
-          gui.image_output.configure(image=imgtk)
-          gui.image_output.image = imgtk
-          #Ažuriranje prikaza slike u Tkinter sučelju s novom slikom s nacrtanim landmarkima.
       
-        elif gui.draw_var:
-          landmark_img = detect.drawing_landmarks_corectly(whole_img)
-          #Ako je varijabla draw_var postavljena na True, crtaju se samo osnovni landmarki (ramena, kukovi, koljena i laktovi) na slici. Ova funkcionalnost omogućuje korisniku da odabere želi li vidjeti sve landmarke ili samo osnovne landmarke.
 
-          b,g,r = cv2.split(landmark_img)
-          img = cv2.merge((r,g,b))
-          #OpenCV koristi BGR format boja, dok Tkinter koristi RGB format, pa je potrebno zamijeniti redoslijed kanala boja prije prikaza slike u Tkinter sučelju.
+      if not gui.start_var or gui.app_quit_var:
+        gui.image_output.configure(image="")
+        cam_index_input = gui.cam_index_input
+        lap_cam()
 
-          im = Image.fromarray(img)
-          imgtk = ImageTk.PhotoImage(image=im) 
-          #Pretvaranje slike iz NumPy formata u PIL format, a zatim u ImageTk format koji Tkinter može prikazati.
+      still_image = lap_cam.capture_image()
+      #Dobivanje slike s kamere.
 
-          gui.image_output.configure(image=imgtk)
-          gui.image_output.image = imgtk 
-          #Ažuriranje prikaza slike u Tkinter sučelju s novom slikom s nacrtanim osnovnim landmarkima.
+      whole_img = mp.Image(
+          image_format=mp.ImageFormat.SRGB,
+          data=still_image
+      )
+      #Pretvaranje slike u format koji Mediapipe može koristiti.
 
-        if gui.save_image_var:
-            cv2.imwrite("landmark_image.jpg", landmark_img)
-            gui.save_image_var = False
-            continue
-            #Ako je varijabla save_image_var postavljena na True, spremamo trenutnu sliku s landmarkima kao "landmark_image.jpg" i resetiramo varijablu save_image_var na False kako bi se spriječilo neželjeno ponašanje programa.
+      detect.person_detected(whole_img)
+      #Provjera je li osoba detektirana na slici.
 
-        if gui.calculate_var:
-            kut1 = detect.calculate_angle("shoulders", "hips")
-            kut2 = detect.calculate_angle("hips", "knees")
-            #Definiranje varijabli kut1 i kut2 koje se izračunavaju pomoću funkcije calculate_angle iz Landmark modula. Kut1 predstavlja kut između ramena i kukova, a kut2 predstavlja kut između kukova i koljena.
+      if not gui.draw_var:
+        landmark_img = detect.drawing_all_landmarks(whole_img)
+        #Ako varijabla draw_var nije postavljena na True, crtaju se svi landmarki na slici. Ako je varijabla draw_var postavljena na True, crtaju se samo osnovni landmarki (ramena, kukovi, koljena i laktovi).
 
-            postotak = kut1
-            postotak2 = kut2
-            #Postavljanje varijabli postotak i postotak2 na izračunate kutove kako bi se mogli prikazati u Tkinter sučelju.
+        b,g,r = cv2.split(landmark_img)
+        img = cv2.merge((r,g,b))
+        #OpenCV koristi BGR format boja, dok Tkinter koristi RGB format, pa je potrebno zamijeniti redoslijed kanala boja prije prikaza slike u Tkinter sučelju.
 
-            gui.shoulder_angle.configure(text=f"Shoulder angle: {postotak:.2f} degrees")
-            gui.knee_angle.configure(text=f"Knee angle: {postotak2:.2f} degrees")
-            gui.calculate_var = False
-            continue
-            #Ako je varijabla calculate_var postavljena na True, izračunavamo kutove, postavljamo ih u varijable postotak i postotak2, ažuriramo tekstovne elemente u Tkinter sučelju s izračunatim kutovima, te resetiramo varijablu calculate_var na False kako bi se spriječilo neželjeno ponašanje programa.
-        
+        im = Image.fromarray(img)
+        imgtk = ImageTk.PhotoImage(image=im) 
+        #Pretvaranje slike iz NumPy formata u PIL format, a zatim u ImageTk format koji Tkinter može prikazati.
+
+        gui.image_output.configure(image=imgtk)
+        gui.image_output.image = imgtk
+        #Ažuriranje prikaza slike u Tkinter sučelju s novom slikom s nacrtanim landmarkima.
+    
+      elif gui.draw_var:
+        landmark_img = detect.drawing_landmarks_corectly(whole_img)
+        #Ako je varijabla draw_var postavljena na True, crtaju se samo osnovni landmarki (ramena, kukovi, koljena i laktovi) na slici. Ova funkcionalnost omogućuje korisniku da odabere želi li vidjeti sve landmarke ili samo osnovne landmarke.
+
+        b,g,r = cv2.split(landmark_img)
+        img = cv2.merge((r,g,b))
+        #OpenCV koristi BGR format boja, dok Tkinter koristi RGB format, pa je potrebno zamijeniti redoslijed kanala boja prije prikaza slike u Tkinter sučelju.
+
+        im = Image.fromarray(img)
+        imgtk = ImageTk.PhotoImage(image=im) 
+        #Pretvaranje slike iz NumPy formata u PIL format, a zatim u ImageTk format koji Tkinter može prikazati.
+
+        gui.image_output.configure(image=imgtk)
+        gui.image_output.image = imgtk 
+        #Ažuriranje prikaza slike u Tkinter sučelju s novom slikom s nacrtanim osnovnim landmarkima.
+
+      if gui.save_image_var:
+          cv2.imwrite("landmark_image.jpg", landmark_img)
+          gui.save_image_var = False
+          continue
+          #Ako je varijabla save_image_var postavljena na True, spremamo trenutnu sliku s landmarkima kao "landmark_image.jpg" i resetiramo varijablu save_image_var na False kako bi se spriječilo neželjeno ponašanje programa.
+
+      if gui.calculate_var:
+          kut1 = detect.calculate_angle("shoulders", "hips")
+          kut2 = detect.calculate_angle("hips", "knees")
+          #Definiranje varijabli kut1 i kut2 koje se izračunavaju pomoću funkcije calculate_angle iz Landmark modula. Kut1 predstavlja kut između ramena i kukova, a kut2 predstavlja kut između kukova i koljena.
+
+          postotak = kut1
+          postotak2 = kut2
+          #Postavljanje varijabli postotak i postotak2 na izračunate kutove kako bi se mogli prikazati u Tkinter sučelju.
+
+          gui.shoulder_angle.configure(text=f"Shoulder angle: {postotak:.2f} degrees")
+          gui.knee_angle.configure(text=f"Knee angle: {postotak2:.2f} degrees")
+          gui.calculate_var = False
+          continue
+          #Ako je varijabla calculate_var postavljena na True, izračunavamo kutove, postavljamo ih u varijable postotak i postotak2, ažuriramo tekstovne elemente u Tkinter sučelju s izračunatim kutovima, te resetiramo varijablu calculate_var na False kako bi se spriječilo neželjeno ponašanje programa.
