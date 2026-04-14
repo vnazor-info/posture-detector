@@ -70,7 +70,7 @@ Program pomaže korisnicima da:
 - Python 🐍 **3.11.9 (preporučeno)**  
 - OpenCV **4.10.0.84**  
 - MediaPipe **0.10.14**  
-- NumPy **1.26.4**  
+- NumPy **2.4.4**  
 - Tkinter (ugrađen)  
 - Math (ugrađen)  
 - Azure-ttk-theme **latest**  
