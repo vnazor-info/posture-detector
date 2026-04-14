@@ -189,7 +189,10 @@ class Detective:
         #Funkcija za izračunavanje kuta između dvije linije definiranih landmarkima. Prima imena linija (line1_name i line2_name), dobiva koordinate tih linija koristeći funkciju get_line, i zatim koristi privatnu funkciju __calculate_angle_2d za izračunavanje kuta između tih linija u 2D prostoru.
 
     def get_line(self, name):
-        if name == "shoulders":
+        if self.pose_landmarks_list is None:
+            return [0, 0], [0, 0]
+            
+        elif name == "shoulders":
             return [[self.pose_landmarks_list.landmark[self.left_shoulder].x, self.pose_landmarks_list.landmark[self.left_shoulder].y],
                     [self.pose_landmarks_list.landmark[self.right_shoulder].x, self.pose_landmarks_list.landmark[self.right_shoulder].y]]
         elif name == "hips":

@@ -535,11 +535,30 @@ def test(gui):
     #Dodavanje varijable lap_cam radi lakse inplementacije kamere iz Camera modula u funkciju.
     detect = Landmark.Detective()
     #Dodavanje varijable detect radi lakse inplementacije detektora iz Landmark modula u funkciju.
+    a = 0
     
     while True:
-      
-
       if not gui.start_var or gui.app_quit_var:
+        uvjet = False
+        last_cameras = []
+
+        while not gui.start_var:
+            gui.image_output.configure(image="")
+            gui.camera_checker()
+            sleep(1)
+
+            # Ako se lista kamera promijenila → refresh menu
+            if gui.available != last_cameras:
+                gui.menu.delete(0, "end")
+
+                for i, cam in enumerate(gui.available):
+                    gui.menu.add_command(
+                        label=f"    Camera {i+1}    ",
+                        command=lambda index=cam: gui.select_camera(index)
+                    )
+
+                last_cameras = gui.available.copy()
+
         gui.image_output.configure(image="")
         cam_index_input = gui.cam_index_input
         lap_cam()

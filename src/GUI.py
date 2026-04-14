@@ -20,14 +20,16 @@ class GUI:
         self.calculate_var = False
         self.draw_var = False
         self.app_quit_var = False 
-        self.avaiable = []
+        self.available = []
+        self.last_cameras = []
         self.max_cameras = 10  
+        self.cam_index_input = 0
         #Inicijalizacija varijabli koje se koriste za upravljanje stanjem aplikacije, kao što su start_var, save_image_var, calculate_var, draw_var i app_quit_var. Također se inicijalizira lista avaiable za pohranu dostupnih kamera i max_cameras koja određuje maksimalni broj kamera koje će se provjeravati.  
         self.camera_checker()   
         #Pozivanje funkcije camera_checker koja provjerava dostupne kamere i popunjava listu avaiable s njihovim indeksima.
 
     def gui_setup(self):
-        
+
         self.start_button = ttk.Checkbutton(
             self.root, text="Start", style="TButton", command=lambda: [self.start_var_change_positive(), self.threading(lambda: lib.test(self))], width=15
         )
@@ -93,12 +95,21 @@ class GUI:
             self.widgets_frame, text="Cameras", menu=self.menu, direction="below"
         )
         self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
+        self.menu.delete(0, "end")
         #Popunjavanje menija s dostupnim kamerama. Za svaku dostupnu kameru, dodaje se komanda u menu s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere.   
-        for i in range(len(self.avaiable)):
-            self.menu.add_command(label=f"    Camera {i+1}    ", command=lambda index=self.avaiable[i]: self.select_camera(index))
+
+
+        self.camera_checker()
+        self.camera_appender()
+
+
+
 
     def start_var_change_positive(self):
         self.start_var = True
+        if self.cam_index_input is None:
+            print("No camera selected, defaulting to camera 0")
+            self.cam_index_input = self.available[0]
         return self.start_var
         #Funkcija koja postavlja start_var na True i vraća tu vrijednost. Ova funkcija se poziva kada se klikne na Start button, što signalizira da je aplikacija spremna za pokretanje glavne funkcionalnosti, kao što je prikaz kamere i obrada slike.
 
@@ -145,22 +156,54 @@ class GUI:
 
     def camera_checker(self):
         print(f"OpenCV version: {cv2.__version__}")
+        self.available = []
 
         for i in range(self.max_cameras):
-            #ponavlja petlju od 0 do max_cameras (10) kako bi provjerila dostupnost kamera. Za svaki indeks kamere, pokušava se otvoriti kamera koristeći cv2.VideoCapture(i). Ako čitanje okvira s kamere nije uspješno, ispisuje se poruka da kamera nije pronađena i nastavlja se na sljedeći indeks. Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.  
-            cap = cv2.VideoCapture(i)
+            #ponavlja petlju od 0 do max_cameras (10) kako bi provjerila dostupnost kamera. Za svaki indeks kamere, pokušava se otvoriti kamera koristeći cv2.Videoself.capture(i). Ako čitanje okvira s kamere nije uspješno, ispisuje se poruka da kamera nije pronađena i nastavlja se na sljedeći indeks. Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.  
+            self.cap = cv2.VideoCapture(i)
             
-            if not cap.read()[0]:
+            if not self.cap.read()[0]:
                 print(f"Camera index {i:02d} not found...")
                 continue
             
-            self.avaiable.append(i)
-            cap.release()
+            self.available.append(i)
+            cv2.destroyAllWindows()
+            self.cap.release()
             #Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.
             
             print(f"Camera index {i:02d} OK!")
 
-        print(f"Cameras found: {self.avaiable}")
+        try:
+            self.available.append(self.cam_index_input)
+        except AttributeError:
+            self.available.append(0)
+        self.available.sort()
+        if self.available[0] == self.available[1]:
+            self.available.pop(0)  
+        print(f"Cameras found: {self.available}")
+
+    def camera_appender(self):
+        if not self.start_var or self.app_quit_var:
+            self.image_output.configure(image="")
+            self.camera_checker()
+
+            # Ako se lista kamera promijenila → refresh menu
+            if self.available != self.last_cameras:
+                self.menu.delete(0, "end")
+
+                if not self.available:
+                    self.menu.add_command(label="No cameras found", state="disabled")
+                else:
+                    for i, cam in enumerate(self.available):
+                        self.menu.add_command(
+                            label=f"    Camera {i+1}    ",
+                            command=lambda index=cam: self.select_camera(index)
+                        )
+
+                self.last_cameras = self.available.copy()
+
+        # 🔁 Ponovno pozovi funkciju svakih 1s (BITNO)
+        self.root.after(1000, self.camera_appender)
 
     def GUI_start(self):
         self.root = tk.Tk()
