@@ -97,10 +97,6 @@ class GUI:
         for i in range(len(self.avaiable)):
             self.menu.add_command(label=f"    Camera {i+1}    ", command=lambda index=self.avaiable[i]: self.select_camera(index))
 
-        self.errorbox = ttk.Label(self.root, text="Error box", style='TLabel', wraplength=300, justify="center", foreground="red")
-        self.errorbox.place(relx=0.5, rely=0.2, anchor="center")
-        #Postavljanje error boxa koji koristi ttk.Label. Label je namijenjen za prikazivanje poruka o greškama i koristi se wraplength za ograničavanje širine teksta, justify za centriranje teksta i foreground za postavljanje boje teksta na crvenu. Label je postavljen na sredinu prozora koristeći place metodu s relx, rely i anchor parametrima.       
-
     def start_var_change_positive(self):
         self.start_var = True
         return self.start_var

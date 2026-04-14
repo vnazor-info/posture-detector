@@ -536,13 +536,6 @@ def test(gui):
     detect = Landmark.Detective()
     #Dodavanje varijable detect radi lakse inplementacije detektora iz Landmark modula u funkciju.
     
-    if gui.save_image_var:
-        print("image cannot be saved because the program is not running")
-        gui.save_image_var = False
-        gui.errorbox.configure(text="Error: Sliku nije moguće spremiti jer program nije pokrenut.")
-        #Ako korisnik pokuša spremiti sliku dok program nije pokrenut, ispisujemo poruku na konzolu i resetiramo varijablu save_image_var na False kako bi se spriječilo neželjeno ponašanje programa.
-
-
     while True:
       
 
