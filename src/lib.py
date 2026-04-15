@@ -539,26 +539,6 @@ def test(gui):
     
     while True:
       if not gui.start_var or gui.app_quit_var:
-        uvjet = False
-        last_cameras = []
-
-        while not gui.start_var:
-            gui.image_output.configure(image="")
-            gui.camera_checker()
-            sleep(1)
-
-            # Ako se lista kamera promijenila → refresh menu
-            if gui.available != last_cameras:
-                gui.menu.delete(0, "end")
-
-                for i, cam in enumerate(gui.available):
-                    gui.menu.add_command(
-                        label=f"    Camera {i+1}    ",
-                        command=lambda index=cam: gui.select_camera(index)
-                    )
-
-                last_cameras = gui.available.copy()
-
         gui.image_output.configure(image="")
         cam_index_input = gui.cam_index_input
         lap_cam()
@@ -622,8 +602,8 @@ def test(gui):
           postotak2 = kut2
           #Postavljanje varijabli postotak i postotak2 na izračunate kutove kako bi se mogli prikazati u Tkinter sučelju.
 
-          gui.shoulder_angle.configure(text=f"Shoulder angle: {postotak:.2f} degrees")
-          gui.knee_angle.configure(text=f"Knee angle: {postotak2:.2f} degrees")
+          gui.shoulder_angle.configure(text=f"Kut ramena: {postotak:.2f} degrees")
+          gui.knee_angle.configure(text=f"Kut koljena+: {postotak2:.2f} degrees")
           gui.calculate_var = False
           continue
           #Ako je varijabla calculate_var postavljena na True, izračunavamo kutove, postavljamo ih u varijable postotak i postotak2, ažuriramo tekstovne elemente u Tkinter sučelju s izračunatim kutovima, te resetiramo varijablu calculate_var na False kako bi se spriječilo neželjeno ponašanje programa.

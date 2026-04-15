@@ -43,25 +43,25 @@ class GUI:
         #Postavljanje stop buttona koji koristi ttk.Button. Kada se klikne, poziva se funkcija start_var_change_negative koja postavlja start_var na False. Button je smješten u grid layoutu na poziciji (1, 0) s određenim paddingom i poravnanjem.
 
         self.button_save = ttk.Button(
-            self.root,  text="Save Image", style='TButton', command=lambda: [self.save_image_var_change()], width=15
+            self.root,  text="Spremi sliku", style='TButton', command=lambda: [self.save_image_var_change()], width=15
         )
         self.button_save.grid(row=2, column=0, pady=5, padx=5, sticky="w")
         #Postavljanje save image buttona koji koristi ttk.Button. Kada se klikne, poziva se funkcija save_image_var_change koja postavlja save_image_var na True. Button je smješten u grid layoutu na poziciji (2, 0) s određenim paddingom i poravnanjem.
 
         self.button_exit = ttk.Button(
-            self.root, text="Exit", style='TButton', command=self.app_quit, width=15
+            self.root, text="Izlaz", style='TButton', command=self.app_quit, width=15
         )
         self.button_exit.grid(row=3, column=0, pady=5, padx=5, sticky="w")
         #Postavljanje exit buttona koji koristi ttk.Button. Kada se klikne, poziva se funkcija app_quit koja postavlja app_quit_var na True, zatim zatvara sve OpenCV prozore, uništava glavni prozor GUI-a i izlazi iz aplikacije. Button je smješten u grid layoutu na poziciji (3, 0) s određenim paddingom i poravnanjem.
         
         self.button_calculate = ttk.Button(
-            self.root, text="Calculate", style='TButton', command=self.calculate_var_change, width=15
+            self.root, text="Izračunaj", style='TButton', command=self.calculate_var_change, width=15
         )
         self.button_calculate.grid(row=4, column=0, pady=5, padx=5, sticky="w")
         #Postavljanje calculate buttona koji koristi ttk.Button. Kada se klikne, poziva se funkcija calculate_var_change koja postavlja calculate_var na True. Button je smješten u grid layoutu na poziciji (4, 0) s određenim paddingom i poravnanjem.
 
         self.button_color_toggle = ttk.Checkbutton(
-            self.root, text='Toggle Color', style='TRadiobutton', command=self.draw_var_change, width=15
+            self.root, text='Uključi/Isključi boju', style='TRadiobutton', command=self.draw_var_change, width=15
         )
         self.button_color_toggle.grid(row=5, column=0, padx=5, pady=5, sticky="w")
         #Postavljanje color toggle buttona koji koristi ttk.Checkbutton. Kada se klikne, poziva se funkcija draw_var_change koja mijenja vrijednost draw_var između True i False. Button je smješten u grid layoutu na poziciji (5, 0) s određenim paddingom i poravnanjem.
@@ -70,15 +70,15 @@ class GUI:
         self.image_output.grid(sticky="e", row=7, column=0, padx=5, pady=5)
         #Postavljanje labela za prikaz slike koji koristi ttk.Label. Label je smješten u grid layoutu na poziciji (7, 0) s određenim paddingom i poravnanjem.  
         
-        self.tutorial_label = ttk.Label(self.root, text="Dobrodosli u nas program, za pokretanje programa odaberite kameru, te pritisnite gumb Start.", style='TLabel', wraplength=300, justify="center")
+        self.tutorial_label = ttk.Label(self.root, text="Dobrodosli u nas program, za pokretanje programa odaberite kameru, te pritisnite gumb Start. Ako ne odaberete kameru automatski će se koristiti default kamera.", style='TLabel', wraplength=300, justify="center")
         self.tutorial_label.place(relx=0.5, rely=0.03, anchor="center")
         #Postavljanje tutorial labela koji koristi ttk.Label. Label sadrži tekst dobrodošlice i uputa za pokretanje programa. Koristi se wraplength za ograničavanje širine teksta i justify za centriranje teksta. Label je postavljen na sredinu prozora koristeći place metodu s relx, rely i anchor parametrima.
 
-        self.shoulder_angle = ttk.Label(self.root, text="Shoulder angle: ", style='TLabel', wraplength=300, justify="center")
+        self.shoulder_angle = ttk.Label(self.root, text="Kut ramena: ", style='TLabel', wraplength=300, justify="center")
         self.shoulder_angle.place(relx=0.5, rely=0.1, anchor="center")
         #Postavljanje shoulder angle labela koji koristi ttk.Label. Label sadrži tekst "Shoulder angle: " i koristi se wraplength za ograničavanje širine teksta i justify za centriranje teksta. Label je postavljen na sredinu prozora koristeći place metodu s relx, rely i anchor parametrima.
 
-        self.knee_angle = ttk.Label(self.root, text="Knee angle: ", style='TLabel', wraplength=300, justify="center")
+        self.knee_angle = ttk.Label(self.root, text="Kut koljena: ", style='TLabel', wraplength=300, justify="center")
         self.knee_angle.place(relx=0.5, rely=0.15, anchor="center")
         #Postavljanje knee angle labela koji koristi ttk.Label. Label sadrži tekst "Knee angle: " i koristi se wraplength za ograničavanje širine teksta i justify za centriranje teksta. Label je postavljen na sredinu prozora koristeći place metodu s relx, rely i anchor parametrima.
 
@@ -92,16 +92,16 @@ class GUI:
         self.menu = tk.Menu(self.root)
         
         self.menubutton = ttk.Menubutton(
-            self.widgets_frame, text="Cameras", menu=self.menu, direction="below"
+            self.widgets_frame, text="Kamere", menu=self.menu, direction="below"
         )
         self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
         self.menu.delete(0, "end")
         #Popunjavanje menija s dostupnim kamerama. Za svaku dostupnu kameru, dodaje se komanda u menu s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere.   
 
-
         self.camera_checker()
+        #Nakon postavljanja menubuttona, poziva se funkcija camera_checker kako bi se provjerile dostupne kamere i popunio meni s odgovarajućim opcijama. Ovo osigurava da je meni ažuriran s trenutnim dostupnim kamerama kada se GUI pokrene.
         self.camera_appender()
-
+        #Pozivanje funkcije camera_appender koja kontinuirano provjerava dostupnost kamera i ažurira meni s kamerama. Ova funkcija se poziva nakon postavljanja menubuttona kako bi se osiguralo da je meni ažuriran s trenutnim dostupnim kamerama kada se GUI pokrene.
 
 
 
@@ -157,6 +157,7 @@ class GUI:
     def camera_checker(self):
         print(f"OpenCV version: {cv2.__version__}")
         self.available = []
+        #stvaranje liste available koja će se koristiti za pohranu indeksa dostupnih kamera. Ova funkcija provjerava dostupnost kamera na računalu tako što pokušava otvoriti svaku kameru od 0 do max_cameras (10) koristeći OpenCV funkciju cv2.VideoCapture. Ako kamera nije dostupna, ispisuje se poruka da kamera nije pronađena. Ako je kamera dostupna, njen indeks se dodaje u listu available, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.
 
         for i in range(self.max_cameras):
             #ponavlja petlju od 0 do max_cameras (10) kako bi provjerila dostupnost kamera. Za svaki indeks kamere, pokušava se otvoriti kamera koristeći cv2.Videoself.capture(i). Ako čitanje okvira s kamere nije uspješno, ispisuje se poruka da kamera nije pronađena i nastavlja se na sljedeći indeks. Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.  
@@ -165,6 +166,7 @@ class GUI:
             if not self.cap.read()[0]:
                 print(f"Camera index {i:02d} not found...")
                 continue
+            #Ako čitanje okvira s kamere nije uspješno, ispisuje se poruka da kamera nije pronađena i nastavlja se na sljedeći indeks. Ako je kamera dostupna, njen indeks se dodaje u listu avaiable, kamera se zatvara i ispisuje se poruka da je kamera OK. Nakon provjere svih indeksa, ispisuje se lista pronađenih kamera.
             
             self.available.append(i)
             cv2.destroyAllWindows()
@@ -177,28 +179,37 @@ class GUI:
             self.available.append(self.cam_index_input)
         except AttributeError:
             self.available.append(0)
+            #Ako se dogodi AttributeError prilikom pokušaja dodavanja cam_index_input u listu available, to znači da cam_index_input nije definiran. U tom slučaju, dodaje se indeks 0 u listu available kao zadana kamera. Ovo osigurava da barem jedna kamera bude dostupna u listi, čak i ako cam_index_input nije postavljen.
         self.available.sort()
-        if self.available[0] == self.available[1]:
-            self.available.pop(0)  
+        #Nakon što su svi dostupni indeksi kamera dodani u listu available, lista se sortira kako bi se osiguralo da su indeksi poredani od najmanjeg do najvećeg. Ovo olakšava korisniku da pronađe i odabere željenu kameru iz menija.
+        for i in range(len(self.available) - 2, -1, -1):
+            if self.available[i] == self.available[i + 1]:
+                self.available.pop(i)
+                #Nakon sortiranja liste available, provjerava se da li su susjedni elementi u listi isti. Ako jesu, to znači da je cam_index_input već dodan u listu kao duplikat. U tom slučaju, prvi element (duplikat) se uklanja iz liste pomoću pop(i). Ovo osigurava da lista available sadrži samo jedinstvene indekse kamera, bez duplikata.
+      
         print(f"Cameras found: {self.available}")
 
     def camera_appender(self):
         if not self.start_var or self.app_quit_var:
             self.image_output.configure(image="")
             self.camera_checker()
+            #Ova funkcija se koristi za kontinuirano provjeravanje dostupnosti kamera i ažuriranje menija s kamerama. Ako start_var nije postavljen na True ili ako app_quit_var nije postavljen na False, funkcija će očistiti prikaz slike, pozvati camera_checker da provjeri dostupne kamere i ažurirati meni s kamerama ako se lista dostupnih kamera promijenila. Nakon toga, funkcija će se ponovno pozvati nakon 1 sekundu kako bi se kontinuirano provjeravala dostupnost kamera.
 
             # Ako se lista kamera promijenila → refresh menu
             if self.available != self.last_cameras:
                 self.menu.delete(0, "end")
+                #Ako se lista dostupnih kamera promijenila u odnosu na prethodnu provjeru (last_cameras), meni se briše i ponovno popunjava s novom listom dostupnih kamera. Ako nema dostupnih kamera, dodaje se onemogućena komanda "No cameras found". Ako postoje dostupne kamere, za svaku kameru se dodaje komanda u meni s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere. Nakon ažuriranja menija, last_cameras se ažurira na trenutnu listu available kako bi se pratilo promjene u dostupnosti kamera.
 
                 if not self.available:
                     self.menu.add_command(label="No cameras found", state="disabled")
+                    #Ako nema dostupnih kamera, dodaje se onemogućena komanda "No cameras found" u meni. Ovo informira korisnika da trenutno nema dostupnih kamera za odabir.
                 else:
                     for i, cam in enumerate(self.available):
                         self.menu.add_command(
-                            label=f"    Camera {i+1}    ",
+                            label=f"    Kamera {i+1}    ",
                             command=lambda index=cam: self.select_camera(index)
                         )
+                        #Ako postoje dostupne kamere, za svaku kameru se dodaje komanda u meni s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere. Ovo omogućava korisniku da odabere željenu kameru iz menija.
 
                 self.last_cameras = self.available.copy()
 
