@@ -24,10 +24,8 @@ class GUI:
         self.last_cameras = []
         self.max_cameras = 10  
         self.cam_index_input = 0
-        #Inicijalizacija varijabli koje se koriste za upravljanje stanjem aplikacije, kao što su start_var, save_image_var, calculate_var, draw_var i app_quit_var. Također se inicijalizira lista avaiable za pohranu dostupnih kamera i max_cameras koja određuje maksimalni broj kamera koje će se provjeravati.  
-        self.camera_checker()   
-        #Pozivanje funkcije camera_checker koja provjerava dostupne kamere i popunjava listu avaiable s njihovim indeksima.
-
+        #Inicijalizacija varijabli koje se koriste za upravljanje stanjem aplikacije, kao što su start_var, save_image_var, calculate_var, draw_var i app_quit_var. Također se inicijalizira lista avaiable za pohranu dostupnih kamera i max_cameras koja određuje maksimalni broj kamera koje će se provjeravati.   
+       
     def gui_setup(self):
 
         self.start_button = ttk.Checkbutton(
@@ -89,21 +87,25 @@ class GUI:
         #Postavljanje framea za dodatne widgete koji koristi ttk.Frame. Frame je smješten u grid layoutu na poziciji (6, 0) s određenim paddingom i poravnanjem. Ovaj frame će se koristiti za smještaj menubuttona za odabir kamera.
 
         # Postavljanje menubuttona za odabir kamera. Koristi ttk.Menubutton koji je povezan s tk.Menu. Menu se popunjava komandama koje predstavljaju dostupne kamere, a svaka komanda poziva funkciju select_camera s odgovarajućim indeksom kamere kada se odabere. Menubutton je smješten u grid layoutu unutar widgets_frame na poziciji (0, 0) s određenim paddingom i poravnanjem.
-        self.menu = tk.Menu(self.root)
-        
+        # MENUBUTTON + MENU (ISPRAVNO)
         self.menubutton = ttk.Menubutton(
-            self.widgets_frame, text="Kamere", menu=self.menu, direction="below"
+            self.widgets_frame,
+            text="Kamere"
         )
-        self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
-        self.menu.delete(0, "end")
+        self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="ew")
+
+        self.menu = tk.Menu(self.menubutton, tearoff=0)
+
+        self.menubutton["menu"] = self.menu
         #Popunjavanje menija s dostupnim kamerama. Za svaku dostupnu kameru, dodaje se komanda u menu s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere.   
 
-        self.camera_checker()
+        self.camera_reboot = ttk.Button(
+            self.widgets_frame, text="Ponovno provjeri kamere", style='TButton', command=self.refresh_cameras, width=20
+        )
+        self.camera_reboot.grid(row=4, column=1, padx=5, pady=10, sticky="nsew")
         #Nakon postavljanja menubuttona, poziva se funkcija camera_checker kako bi se provjerile dostupne kamere i popunio meni s odgovarajućim opcijama. Ovo osigurava da je meni ažuriran s trenutnim dostupnim kamerama kada se GUI pokrene.
-        self.camera_appender()
-        #Pozivanje funkcije camera_appender koja kontinuirano provjerava dostupnost kamera i ažurira meni s kamerama. Ova funkcija se poziva nakon postavljanja menubuttona kako bi se osiguralo da je meni ažuriran s trenutnim dostupnim kamerama kada se GUI pokrene.
 
-
+        self.refresh_cameras()
 
     def start_var_change_positive(self):
         self.start_var = True
@@ -175,10 +177,10 @@ class GUI:
             
             print(f"Camera index {i:02d} OK!")
 
-        try:
-            self.available.append(self.cam_index_input)
-        except AttributeError:
-            self.available.append(0)
+        #try:
+        #    self.available.append(self.cam_index_input)
+        #except AttributeError:
+        self.available.append(0)
             #Ako se dogodi AttributeError prilikom pokušaja dodavanja cam_index_input u listu available, to znači da cam_index_input nije definiran. U tom slučaju, dodaje se indeks 0 u listu available kao zadana kamera. Ovo osigurava da barem jedna kamera bude dostupna u listi, čak i ako cam_index_input nije postavljen.
         self.available.sort()
         #Nakon što su svi dostupni indeksi kamera dodani u listu available, lista se sortira kako bi se osiguralo da su indeksi poredani od najmanjeg do najvećeg. Ovo olakšava korisniku da pronađe i odabere željenu kameru iz menija.
@@ -190,31 +192,16 @@ class GUI:
         print(f"Cameras found: {self.available}")
 
     def camera_appender(self):
-        if not self.start_var or self.app_quit_var:
-            self.image_output.configure(image="")
-            self.camera_checker()
-            #Ova funkcija se koristi za kontinuirano provjeravanje dostupnosti kamera i ažuriranje menija s kamerama. Ako start_var nije postavljen na True ili ako app_quit_var nije postavljen na False, funkcija će očistiti prikaz slike, pozvati camera_checker da provjeri dostupne kamere i ažurirati meni s kamerama ako se lista dostupnih kamera promijenila. Nakon toga, funkcija će se ponovno pozvati nakon 1 sekundu kako bi se kontinuirano provjeravala dostupnost kamera.
+        self.menu.delete(0, "end")  # očisti
 
-            # Ako se lista kamera promijenila → refresh menu
-            if self.available != self.last_cameras:
-                self.menu.delete(0, "end")
-                #Ako se lista dostupnih kamera promijenila u odnosu na prethodnu provjeru (last_cameras), meni se briše i ponovno popunjava s novom listom dostupnih kamera. Ako nema dostupnih kamera, dodaje se onemogućena komanda "No cameras found". Ako postoje dostupne kamere, za svaku kameru se dodaje komanda u meni s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere. Nakon ažuriranja menija, last_cameras se ažurira na trenutnu listu available kako bi se pratilo promjene u dostupnosti kamera.
-
-                if not self.available:
-                    self.menu.add_command(label="No cameras found", state="disabled")
-                    #Ako nema dostupnih kamera, dodaje se onemogućena komanda "No cameras found" u meni. Ovo informira korisnika da trenutno nema dostupnih kamera za odabir.
-                else:
-                    for i, cam in enumerate(self.available):
-                        self.menu.add_command(
-                            label=f"    Kamera {i+1}    ",
-                            command=lambda index=cam: self.select_camera(index)
-                        )
-                        #Ako postoje dostupne kamere, za svaku kameru se dodaje komanda u meni s tekstom "Camera {i+1}" i funkcijom koja poziva select_camera s odgovarajućim indeksom kamere. Ovo omogućava korisniku da odabere željenu kameru iz menija.
-
-                self.last_cameras = self.available.copy()
-
-        # 🔁 Ponovno pozovi funkciju svakih 1s (BITNO)
-        self.root.after(1000, self.camera_appender)
+        for cam in self.available:
+            self.menu.add_command(
+                label=f"Kamera {self.available.index(cam) + 1}",
+                command=lambda c=cam: self.select_camera(c)
+            )
+    def refresh_cameras(self):
+        self.camera_checker()        # pronađi kamere
+        self.camera_appender()       # napuni menu       
 
     def GUI_start(self):
         self.root = tk.Tk()
